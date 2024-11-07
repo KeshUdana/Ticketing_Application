@@ -1,159 +1,180 @@
 package Startup;
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/*
-* Implementing the TicketingCLI class as a singleton i to ensure that only one instance
-* of the TicketingCLI exists across the entire application. This approach is often
-* used in cases where shared resources or configuration need to be managed centrally.
-* */
-
 public class TicketingCLI {
-    private static TicketingCLI instance; // Single instance of TicketingCLI (Singleton)
-    private SystemConfig config; // Configuration settings for ticketing system
-    private BlockingQueue<Integer> ticketQueue; // Queue to store tickets
-    private AtomicInteger ticketCounter; // Counter to track ticket numbers
-    private boolean running; // Indicates if the ticketing system is active
-    private String prompt; // Prompt message for user input (not currently used)
+    private static TicketingCLI instance;  // Singleton instance of TicketingCLI
+    private SystemConfig config;  // Holds the system configuration
+    private BlockingQueue<Integer> ticketQueue;  // Queue to manage ticket availability
+    private AtomicInteger ticketCounter;  // Counter to track the number of tickets issued
+    private boolean running;  // Flag to track whether the system is running
+    private Scanner input;  // Declare scanner as a field for user input
 
-    // Private constructor to prevent instantiation from outside (Singleton)
+    // Constructor - Initializes the system
     private TicketingCLI() {
-        config = new SystemConfig(); // Initialize configuration
-        ticketQueue = new LinkedBlockingQueue<>(); // Initialize ticket queue
-        ticketCounter = new AtomicInteger(0); // Initialize ticket counter
-        running = false; // Set initial running status to false
+        // Instantiate the Scanner here so it can be used in both methods
+        input = new Scanner(System.in);
+
+        // Check if config.json exists before loading
+        File configFile = new File("config.json");
+        if (configFile.exists()) {
+            config = ConfigManager.loadConfig();  // Load existing configuration
+        } else {
+            // If config file doesn't exist, prompt user for input and save it
+            System.out.println("No configuration found. Setting up new configuration.");
+            config = new SystemConfig();  // Create a new configuration
+            setupConfig();  // Collect configuration from user
+        }
+        ticketQueue = new LinkedBlockingQueue<>();  // Initialize the ticket queue
+        ticketCounter = new AtomicInteger(0);  // Initialize ticket counter
     }
 
-    // Public method to provide access to the single instance of TicketingCLI
+    // Singleton pattern to ensure only one instance of TicketingCLI
     public static synchronized TicketingCLI getInstance() {
-        if (instance == null) { // Check if instance is already created
-            instance = new TicketingCLI(); // Create a new instance if null
+        if (instance == null) {
+            instance = new TicketingCLI();
         }
-        return instance; // Return the single instance
+        return instance;
     }
 
-    // Sets up initial system configuration through user input
-    private void setupConfig(Scanner input) {
-        config.setMaxTicketCapacity(getValidIntInput(input, "Enter Maximum Tickets Capacity for the system: "));
-        config.setTotalTickets(getValidIntInput(input, "Enter Total Tickets for the system: "));
-        config.setVendorReleaseRate(getValidDoubleInput(input, "Enter Vendor Ticket Release Rate: "));
-        config.setUserRetrievalRate(getValidDoubleInput(input, "Enter Customer Retrieval Rate: "));
+    // Method to collect and save configuration from the user
+    private void setupConfig() {
+        // Prompts user for input if no configuration file exists
+        config.setMaxTicketCapacity(getValidIntInput("Enter Maximum Tickets Capacity for the system: "));
+        config.setTotalTickets(getValidIntInput("Enter Total Tickets for the system: "));
+        config.setVendorReleaseRate(getValidDoubleInput("Enter Vendor Ticket Release Rate: "));
+        config.setUserRetrievalRate(getValidDoubleInput("Enter Customer Retrieval Rate: "));
+        ConfigManager.saveConfig(config);  // Save the configuration to a JSON file
     }
 
-    // Starts the CLI to accept user commands
+    // Method to start the system and display the current configuration
     public void start() {
-        try (Scanner input = new Scanner(System.in)) {
-            setupConfig(input); // Configure system settings based on user input
+        // Display the current configuration
+        System.out.println("Current Configuration: ");
+        System.out.println(config.toString());
 
-            while (true) { // Continuously waits for user commands
-                String command = input.nextLine().trim().toUpperCase(); // Read and format command
-                System.out.print("Enter START to Start the System: ");
-                if ("START".equals(command)) { // Start ticketing if command is "START"
-                    startTicketing();
-                } else if ("STOP".equals(command)) { // Stop ticketing if command is "STOP"
-                    stopTicketing();
-                    break; // Exit the loop after stopping
-                } else { // Handle invalid commands
-                    System.out.println("Invalid command. Only enter START or STOP");
-                }
+        // Allow user to start or stop the system
+        System.out.print("Enter START to Start the System: ");
+        while (true) {
+            String command = input.nextLine().trim().toUpperCase();
+            if ("START".equals(command)) {
+                startTicketing();  // Start the ticketing process
+            } else if ("STOP".equals(command)) {
+                stopTicketing();  // Stop the ticketing process
+                break;  // Exit the loop
+            } else {
+                System.out.println("Invalid command. Only enter START or STOP");
             }
         }
     }
 
-    // Gets valid integer input from user with positive value validation
-    private int getValidIntInput(Scanner input, String prompt) {
+    // Method to get valid integer input from the user
+    private int getValidIntInput(String prompt) {
         int value;
-        while (true) { // Loop until valid input is entered
-            System.out.println(prompt); // Display prompt
-            if (input.hasNextInt()) { // Check if input is an integer
+        while (true) {
+            System.out.println(prompt);
+            if (input.hasNextInt()) {
                 value = input.nextInt();
-                if (value > 0) { // Validate that input is positive
-                    input.nextLine(); // Clear the newline
-                    return value; // Return valid input
+                input.nextLine();  // Consume the leftover newline character
+                if (value > 0) {
+                    return value;  // Return the valid positive integer
                 }
-            } else { // Handle invalid input
-                input.next(); // Clear invalid input
+            } else {
+                input.next();  // discard invalid input
             }
-            System.out.println("Invalid input. Enter positive integer"); // Error message
+            System.out.println("Invalid input. Enter a positive integer.");
         }
     }
 
-    // Gets valid double input from user with positive value validation
-    private double getValidDoubleInput(Scanner input, String prompt) {
+    // Method to get valid double input from the user
+    private double getValidDoubleInput(String prompt) {
         double value;
-        while (true) { // Loop until valid input is entered
-            System.out.print(prompt); // Display prompt
-            if (input.hasNextDouble()) { // Check if input is a double
+        while (true) {
+            System.out.print(prompt);
+            if (input.hasNextDouble()) {
                 value = input.nextDouble();
-                if (value > 0) { // Validate that input is positive
-                    input.nextLine(); // Clear the newline
-                    return value; // Return valid input
+                input.nextLine();  // Consume the leftover newline character
+                if (value > 0) {
+                    return value;  // Return the valid positive number
                 }
-            } else { // Handle invalid input
-                input.next(); // Clear invalid input
+            } else {
+                input.next();  // discard invalid input
             }
-            System.out.println("Invalid input. Please enter a positive number."); // Error message
+            System.out.println("Invalid input. Please enter a positive number.");
         }
     }
 
-    // Starts the ticketing process and launches vendor and customer threads
+    // Method to start the ticketing process (if not already running)
     private void startTicketing() {
-        if (running) { // Check if ticketing is already running
-            System.out.println("Ticketing process is currently running.");
-            return;
+        if (running) {
+            System.out.println("Ticketing process is already running.");
+            return;  // Return if already running
         }
         System.out.println("Starting ticketing process...");
-        running = true; // Set running status to true
-
-        // Start vendor and customer threads for ticketing operations
-        new Thread(this::vendorTickets).start();
-        new Thread(this::customerTickets).start();
+        running = true;  // Set the flag to indicate the system is running
+        new Thread(this::vendorTickets).start();  // Start the vendor ticketing process in a new thread
+        new Thread(this::customerTickets).start();  // Start the customer ticketing process in a new thread
     }
 
-    // Stops the ticketing process
+    // Method to stop the ticketing process (if running)
     private void stopTicketing() {
-        if (!running) { // Check if ticketing is already stopped
+        if (!running) {
             System.out.println("Ticketing process is not running.");
-            return;
+            return;  // Return if not running
         }
         System.out.println("Stopping ticketing process...");
-        running = false; // Set running status to false
+        running = false;  // Set the flag to indicate the system is stopped
     }
 
-    // Vendor thread function to add tickets to the queue at a defined rate
+    // Method to simulate the vendor releasing tickets
     private void vendorTickets() {
-        while (running) { // Loop while ticketing is active
+        while (running) {
             try {
-                if (ticketCounter.get() < config.getMaxTicketCapacity()) { // Check capacity limit
-                    ticketQueue.put(ticketCounter.incrementAndGet()); // Add ticket to queue
-                    System.out.println("Added ticket #" + ticketCounter.get()); // Log ticket addition
+                // If ticket counter is less than max capacity, release a new ticket
+                if (ticketCounter.get() < config.getMaxTicketCapacity()) {
+                    ticketQueue.put(ticketCounter.incrementAndGet());  // Add ticket to queue
+                    System.out.println("Added ticket #" + ticketCounter.get());
                 }
-                Thread.sleep((long) (1000 / config.getVendorReleaseRate())); // Delay based on release rate
-            } catch (InterruptedException e) { // Handle interruption
-                Thread.currentThread().interrupt();
+                Thread.sleep((long) (1000 / config.getVendorReleaseRate()));  // Sleep based on vendor release rate
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();  // Handle interruption
             }
         }
     }
 
-    // Customer thread function to retrieve tickets from the queue at a defined rate
+    // Method to simulate customers purchasing tickets
     private void customerTickets() {
-        while (running) { // Loop while ticketing is active
+        while (running) {
             try {
-                Integer ticket = ticketQueue.take(); // Retrieve ticket from queue
-                System.out.println("Ticket #" + ticket + " purchased by Customer"); // Log purchase
-                Thread.sleep((long) (1000 / config.getUserRetrievalRate())); // Delay based on retrieval rate
-            } catch (InterruptedException e) { // Handle interruption
-                Thread.currentThread().interrupt();
+                Integer ticket = ticketQueue.take();  // Take a ticket from the queue
+                System.out.println("Ticket #" + ticket + " purchased by Customer");
+                Thread.sleep((long) (1000 / config.getUserRetrievalRate()));  // Sleep based on customer retrieval rate
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();  // Handle interruption
             }
         }
     }
 
-    // Main method to initialize and start the TicketingCLI instance
+    // Main method to run the CLI
     public static void main(String[] args) {
-        TicketingCLI cli = TicketingCLI.getInstance(); // Get the singleton instance
-        cli.start(); // Start the CLI
+        TicketingCLI cli = TicketingCLI.getInstance();  // Get the singleton instance
+        cli.start();  // Start the system
     }
 }
+/*
+* Comments explanation:
+Constructor: Initializes the Scanner object, checks if the configuration file exists, loads or sets up the configuration accordingly, and initializes necessary fields like ticketQueue and ticketCounter.
+Singleton pattern: The getInstance method ensures that only one instance of TicketingCLI exists.
+setupConfig: Prompts the user for necessary configuration settings like maximum ticket capacity, release rate, and retrieval rate.
+start: Displays the current configuration and waits for the user to enter "START" to start the system, or "STOP" to stop it.
+getValidIntInput and getValidDoubleInput: These methods prompt the user for valid integer and double inputs, respectively, ensuring that the input is valid and positive.
+startTicketing: Starts the ticketing process by launching two threads: one for the vendor releasing tickets and one for customers purchasing tickets.
+stopTicketing: Stops the ticketing process by setting the running flag to false.
+vendorTickets: Simulates the vendor releasing tickets and adding them to the queue.
+customerTickets: Simulates customers purchasing tickets from the queue.
+main: Initializes and starts the ticketing system.
+* */
