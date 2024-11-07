@@ -2,12 +2,14 @@ package managment.backend.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigInteger;
+
 @Entity
 @Table(name="Vendors")
 public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int vendorID;
+    private BigInteger vendorID;
     @Column(name="Username")
     private String vendorUsername;
     @Column(name="Email",nullable = false,unique = true)
@@ -17,14 +19,14 @@ public class Vendor {
 
     //Getters
 
-    public int getVendorID(){return vendorID;}
+    public BigInteger getVendorID(){return vendorID;}
     public String getVendorUsername(){return vendorUsername;}
     public String getVendorEmail(){return vendorEmail;}
     public String getVendorPassword(){return vendorPassword;}
 
     //Setters
 
-    public void setVendorID(int vendorID){
+    public void setVendorID(BigInteger vendorID){
         this.vendorID=vendorID;
     }
     public void setVendorUsername(String vendorUsername){
