@@ -137,7 +137,7 @@ public class TicketingCLI {
                 // If ticket counter is less than max capacity, release a new ticket
                 if (ticketCounter.get() < config.getMaxTicketCapacity()) {
                     ticketQueue.put(ticketCounter.incrementAndGet());  // Add ticket to queue
-                    System.out.println("Added ticket #" + ticketCounter.get());
+                    System.out.println("Vendor Added ticket #" + ticketCounter.get());
                 }
                 Thread.sleep((long) (1000 / config.getVendorReleaseRate()));  // Sleep based on vendor release rate
             } catch (InterruptedException e) {
