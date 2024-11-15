@@ -5,9 +5,11 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TicketingCLI {
     private static TicketingCLI instance;  // Singleton instance of TicketingCLI
+    private static final ReentrantLock lock=new ReentrantLock();
     private SystemConfig config;  // Holds the system configuration
     private BlockingQueue<Integer> ticketQueue;  // Queue to manage ticket availability
     private AtomicInteger ticketCounter;  // Counter to track the number of tickets issued
@@ -34,9 +36,14 @@ public class TicketingCLI {
     }
 
     // Singleton pattern to ensure only one instance of TicketingCLI
-    public static synchronized TicketingCLI getInstance() {
-        if (instance == null) {
-            instance = new TicketingCLI();
+    public static TicketingCLI getInstance() {
+        lock.lock();
+        try{
+        if(instance=null){
+            instance=new TicketingCLI();
+        }
+        }finally {
+            lock.unlock();
         }
         return instance;
     }
@@ -110,24 +117,33 @@ public class TicketingCLI {
 
     // Method to start the ticketing process (if not already running)
     private void startTicketing() {
-        if (running) {
-            System.out.println("Ticketing process is already running.");
-            return;  // Return if already running
+        lock.lock();
+        try{
+        if(running){
+            System.out.println("Ticketing process is already running");
+            return;//Return of running
         }
-        System.out.println("Starting ticketing process...");
-        running = true;  // Set the flag to indicate the system is running
-        new Thread(this::vendorTickets).start();  // Start the vendor ticketing process in a new thread
-        new Thread(this::customerTickets).start();  // Start the customer ticketing process in a new thread
+        System.out.println("Start the ticketing process...");
+        running=true;
+        new Thread(this::vendorTickets).start();
+        new Thread(this::customerTickets).start();
+        }finally {
+            lock.unlock();
+        }
     }
-
     // Method to stop the ticketing process (if running)
     private void stopTicketing() {
-        if (!running) {
-            System.out.println("Ticketing process is not running.");
-            return;  // Return if not running
+        lock.lock();//Aquire the lock
+        try{
+        if(!running){
+            System.out.println("Ticketing Process is not Running");
+            return;
         }
         System.out.println("Stopping ticketing process...");
-        running = false;  // Set the flag to indicate the system is stopped
+        running=false;//set flag to let know the system has stopped
+        }finally {
+            lock.unlock();//rlease the lock
+        }
     }
 
     // Method to simulate the vendor releasing tickets
