@@ -9,48 +9,64 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class VendorService {
     private final ConfigService configService;
     private final TicketPool ticketPool; // Shared pool for tickets
     private SystemConfig config;
+    private ExecutorService executorService; // For managing vendor threads
 
     public VendorService(ConfigService configService, TicketPool ticketPool) {
         this.configService = configService;
         this.ticketPool = ticketPool;
     }
 
-    public void startVendorThreads() {
-        int vendorThreads = config.getVendorReleaseRate();
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-
-        for (int i = 0; i < vendorThreads; i++) {
-            executorService.submit(() -> {
-                try {
-                    int ticketId = ticketPool.retrieveTicket();
-                    System.out.println("Customer purchased ticket #" + ticketId);
-                } catch (Exception e) {
-                    System.out.println("No tickets available for purchase.");
-                }
-            });
-        }
-
-        executorService.shutdown();
-    }
-    public void stopVendorThread(){}
-
     @PostConstruct
     public void init() {
         this.config = configService.getConfig();
     }
 
+    public void startVendorThreads() {
+        int vendorThreads = config.getVendorReleaseRate(); // Get vendor thread rate from config
+        executorService = Executors.newFixedThreadPool(vendorThreads); // Dynamically adjust the number of threads
+
+        for (int i = 0; i < vendorThreads; i++) {
+            executorService.submit(() -> {
+                try {
+                    int ticketId = ticketPool.retrieveTicket(); // Simulate ticket retrieval
+                    System.out.println("Vendor released ticket #" + ticketId);
+                } catch (Exception e) {
+                    System.out.println("No tickets available for release.");
+                }
+            });
+        }
+    }
+
+    // Gracefully stop vendor threads
+    public void stopVendorThreads() {
+        System.out.println("Stopping vendor threads...");
+        if (executorService != null) {
+            try {
+                // Gracefully shut down the executor service
+                executorService.shutdown();
+                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                executorService.shutdownNow();
+            }
+        }
+    }
+
+    // Scheduled task to release tickets at a fixed rate
     @Scheduled(fixedRate = 1000) // Run every second
     public void releaseTickets() {
-        int vendorReleaseRate = config.getVendorReleaseRate();
+        int vendorReleaseRate = config.getVendorReleaseRate(); // Get release rate from config
 
         for (int i = 0; i < vendorReleaseRate; i++) {
-            int ticketId = TicketPool.addTicket();
+            int ticketId = ticketPool.addTicket(); // Add a new ticket to the pool
             System.out.println("Vendor released ticket #" + ticketId);
         }
     }

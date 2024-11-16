@@ -1,6 +1,7 @@
 package managment.backend.service;
 
 import managment.backend.model.TicketPool;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 

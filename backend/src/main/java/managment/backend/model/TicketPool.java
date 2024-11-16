@@ -1,39 +1,58 @@
 package managment.backend.model;
 
+import Startup.ConfigManager;
+import managment.backend.service.ConfigService;
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class TicketPool {
+
     private final BlockingQueue<Integer> ticketQueue;
     private final AtomicInteger ticketCounter;
-    private final int maxCapacity;
+    private final ConfigService configService;
 
-    public TicketPool(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
-        this.ticketQueue = new LinkedBlockingQueue<>(maxCapacity); // Limit to max capacity
+    // Inject ConfigService to load the total tickets capacity from the config
+    public TicketPool(ConfigService configService) {
+        this.configService = configService;
+
+        // Retrieve the total number of tickets (capacity) from the config
+        int totalTickets = configService.getConfig().getTotalTickets();
+        if (totalTickets <= 0) {
+            throw new IllegalArgumentException("Ticket pool capacity must be greater than 0.");
+        }
+
+        this.ticketQueue = new LinkedBlockingQueue<>(totalTickets); // Set capacity from config
         this.ticketCounter = new AtomicInteger(0);
+
+        // Add initial tickets to the pool
+        for (int i = 0; i < totalTickets; i++) {
+            ticketQueue.offer(i + 1);  // Ticket IDs start from 1
+        }
     }
 
     // Add a new ticket to the pool
     public boolean addTicket() {
-        if (ticketCounter.get() < maxCapacity) {
+        int totalTickets = ticketQueue.remainingCapacity() + ticketQueue.size(); // Dynamic capacity
+
+        if (ticketCounter.get() < totalTickets) {
             try {
                 int newTicket = ticketCounter.incrementAndGet();
                 ticketQueue.put(newTicket);
                 System.out.println("Ticket #" + newTicket + " added to the pool.");
-                return true;
+                return true;  // Indicate the ticket was added successfully
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-        } else {
-            System.out.println("Ticket pool is full.");
         }
-        return false;
+        return false;  // Failure to add ticket
     }
 
     // Retrieve a ticket from the pool
-    public Integer retrieveTicket() {
+    public Integer retrieveTicket(){
         try {
             Integer ticket = ticketQueue.take();
             System.out.println("Ticket #" + ticket + " retrieved from the pool.");
@@ -41,7 +60,7 @@ public class TicketPool {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return null;
+        return null; // Failure to retrieve
     }
 
     // Get current ticket count
