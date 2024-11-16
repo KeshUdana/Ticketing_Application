@@ -18,7 +18,7 @@ public class TicketingCLI {
 
     // Constructor - Initializes the system
     private TicketingCLI() {
-        // Instantiate the Scanner here so it can be used in both methods
+        // Instantiate the Scanner here, so it can be used in both methods
         input = new Scanner(System.in);
 
         // Check if config.json exists before loading
@@ -39,7 +39,7 @@ public class TicketingCLI {
     public static TicketingCLI getInstance() {
         lock.lock();
         try{
-        if(instance=null){
+        if(instance == null){
             instance=new TicketingCLI();
         }
         }finally {
@@ -53,8 +53,8 @@ public class TicketingCLI {
         // Prompts user for input if no configuration file exists
         config.setMaxTicketCapacity(getValidIntInput("Enter Maximum Tickets Capacity for the system: "));
         config.setTotalTickets(getValidIntInput("Enter Total Tickets for the system: "));
-        config.setVendorReleaseRate(getValidDoubleInput("Enter Vendor Ticket Release Rate: "));
-        config.setUserRetrievalRate(getValidDoubleInput("Enter Customer Retrieval Rate: "));
+        config.setVendorReleaseRate(getValidIntInput("Enter Vendor Ticket Release Rate: "));
+        config.setUserRetrievalRate(getValidIntInput("Enter Customer Retrieval Rate: "));
         ConfigManager.saveConfig(config);  // Save the configuration to a JSON file
     }
 
@@ -174,6 +174,8 @@ public class TicketingCLI {
             }
         }
     }
+
+
 
     // Main method to run the CLI
     public static void main(String[] args) {

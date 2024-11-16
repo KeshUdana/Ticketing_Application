@@ -2,18 +2,16 @@ package Startup;
 
 public class SystemConfig {
     private int totalTickets; //total tickets in System
-    private double vendorReleaseRate;
-    private double userRetrievalRate;
+    private int vendorReleaseRate;
+    private int userRetrievalRate;
     private int maxTicketCapacity;//maximum tickets in System
 
     //Getters
-    public int getTotalTickets() {
-        return totalTickets;
-    }
-    public double getVendorReleaseRate() {
+
+    public int getVendorReleaseRate() {
         return vendorReleaseRate;
     }
-    public double getUserRetrievalRate() {
+    public int getUserRetrievalRate() {
         return userRetrievalRate;
     }
     public int getMaxTicketCapacity() {
@@ -24,10 +22,10 @@ public class SystemConfig {
     public void setTotalTickets(int totalTickets) {
         this.totalTickets = totalTickets;
     }
-    public void setVendorReleaseRate(double vendorReleaseRate) {
+    public void setVendorReleaseRate(int vendorReleaseRate) {
         this.vendorReleaseRate = vendorReleaseRate;
     }
-    public void setUserRetrievalRate(double userRetrievalRate) {
+    public void setUserRetrievalRate(int userRetrievalRate) {
         this.userRetrievalRate = userRetrievalRate;
     }
     public void setMaxTicketCapacity(int maxTicketCapacity) {
