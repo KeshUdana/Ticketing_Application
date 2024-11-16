@@ -11,12 +11,12 @@ import java.util.concurrent.Executors;
 @Service
 public class UserService {
     private final ConfigService configService;
-    private final TicketPool ticketQueue; // Shared queue for tickets
+    private final TicketPool ticketPool; // Shared pool for tickets
     private SystemConfig config;
 
     public UserService(ConfigService configService, TicketPool ticketPool) {
         this.configService = configService;
-        this.ticketQueue = ticketPool;
+        this.ticketPool = ticketPool;
     }
 
     @PostConstruct
