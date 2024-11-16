@@ -6,7 +6,10 @@ public class SystemConfig {
     private int userRetrievalRate;
     private int maxTicketCapacity;//maximum tickets in System
 
+
+
     //Getters
+    public int getTotalTickets(){return totalTickets;}
 
     public int getVendorReleaseRate() {
         return vendorReleaseRate;

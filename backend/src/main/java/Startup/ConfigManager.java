@@ -15,7 +15,7 @@ public class ConfigManager {
             gson.toJson(config,writer);
             System.out.println("Configuration Saved");
         }catch(IOException e){
-            System.out.println("Error "+e.getMessage());
+           e.printStackTrace();
         }
     }
     //Load from JSON
@@ -24,7 +24,7 @@ public class ConfigManager {
         try(FileReader reader=new FileReader(CONFIG_FILE)){
             return gson.fromJson(reader,SystemConfig.class);
         }catch (IOException e){
-            System.out.println("Error loading "+e.getMessage());
+            e.printStackTrace();
             return new SystemConfig();
         }
     }

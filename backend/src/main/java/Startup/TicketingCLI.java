@@ -69,9 +69,11 @@ public class TicketingCLI {
         while (true) {
             String command = input.nextLine().trim().toUpperCase();
             if ("START".equals(command)) {
-                startTicketing();  // Start the ticketing process
+                System.out.println("Starting the System...");
+               // startTicketing();   Start the ticketing process
             } else if ("STOP".equals(command)) {
-                stopTicketing();  // Stop the ticketing process
+                System.out.println("Stopping the System...");
+               // stopTicketing();  // Stop the ticketing process
                 break;  // Exit the loop
             } else {
                 System.out.println("Invalid command. Only enter START or STOP");
@@ -96,8 +98,9 @@ public class TicketingCLI {
             System.out.println("Invalid input. Enter a positive integer.");
         }
     }
+}
 
-    // Method to get valid double input from the user
+    /* Method to get valid double input from the user
     private double getValidDoubleInput(String prompt) {
         double value;
         while (true) {
@@ -182,17 +185,4 @@ public class TicketingCLI {
         TicketingCLI cli = TicketingCLI.getInstance();  // Get the singleton instance
         cli.start();  // Start the system
     }
-}
-/*
-* Comments explanation:
-Constructor: Initializes the Scanner object, checks if the configuration file exists, loads or sets up the configuration accordingly, and initializes necessary fields like ticketQueue and ticketCounter.
-Singleton pattern: The getInstance method ensures that only one instance of TicketingCLI exists.
-setupConfig: Prompts the user for necessary configuration settings like maximum ticket capacity, release rate, and retrieval rate.
-start: Displays the current configuration and waits for the user to enter "START" to start the system, or "STOP" to stop it.
-getValidIntInput and getValidDoubleInput: These methods prompt the user for valid integer and double inputs, respectively, ensuring that the input is valid and positive.
-startTicketing: Starts the ticketing process by launching two threads: one for the vendor releasing tickets and one for customers purchasing tickets.
-stopTicketing: Stops the ticketing process by setting the running flag to false.
-vendorTickets: Simulates the vendor releasing tickets and adding them to the queue.
-customerTickets: Simulates customers purchasing tickets from the queue.
-main: Initializes and starts the ticketing system.
-* */
+} */
