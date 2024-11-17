@@ -15,31 +15,25 @@ public class TicketPool {
     private final AtomicInteger ticketCounter;
     private final ConfigService configService;
 
-
-    // Inject ConfigService to load the total tickets capacity from the config
     @Autowired
     public TicketPool(ConfigService configService) {
         this.configService = configService;
 
-        // Retrieve the total number of tickets (capacity) from the config
         int totalTickets = configService.getConfig().getTotalTickets();
         if (totalTickets <= 0) {
             throw new IllegalArgumentException("Ticket pool capacity must be greater than 0.");
         }
 
-        this.ticketQueue = new LinkedBlockingQueue<>(totalTickets); // Set capacity from config
+        this.ticketQueue = new LinkedBlockingQueue<>(totalTickets);
         this.ticketCounter = new AtomicInteger(0);
 
-        // Add initial tickets to the pool
         for (int i = 0; i < totalTickets; i++) {
-            ticketQueue.offer(i + 1);  // Ticket IDs start from 1
+            ticketQueue.offer(i + 1);
         }
     }
 
-    // Add a new ticket to the pool
     public boolean addTicket() {
-        int totalTickets = ticketQueue.remainingCapacity() + ticketQueue.size(); // Dynamic capacity
-        if (ticketCounter.get() < totalTickets) {
+        if (ticketCounter.get() < ticketQueue.remainingCapacity() + ticketQueue.size()) {
             try {
                 int newTicket = ticketCounter.incrementAndGet();
                 ticketQueue.put(newTicket);
@@ -52,7 +46,6 @@ public class TicketPool {
         return false;
     }
 
-    // Retrieve a ticket from the pool
     public Integer retrieveTicket() {
         try {
             Integer ticket = ticketQueue.take();
@@ -61,10 +54,9 @@ public class TicketPool {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return null; // Failure to retrieve
+        return null;
     }
 
-    // Get current ticket count
     public int getTicketCount() {
         return ticketQueue.size();
     }

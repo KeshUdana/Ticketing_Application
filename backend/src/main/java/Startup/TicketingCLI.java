@@ -1,118 +1,120 @@
 package Startup;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import managment.backend.service.ConfigService;
-import managment.backend.service.TicketingService;
-import managment.backend.service.UserService;
-import managment.backend.service.VendorService;
-import managment.backend.model.TicketPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class TicketingCLI {
 
-    private static TicketingCLI instance;  // Singleton instance
-    private static final ReentrantLock lock = new ReentrantLock();
-    private SystemConfig config;  // Holds the system configuration
-    private BlockingQueue<Integer> ticketQueue;  // Queue to manage ticket availability
-    private AtomicInteger ticketCounter;  // Counter to track the number of tickets issued
-    private boolean running;  // Flag to track whether the system is running
-    private Scanner input;  // Declare scanner as a field for user input
-    private TicketingService ticketingService; // Service dependency
+    private static final Logger logger = LoggerFactory.getLogger(TicketingCLI.class);
 
-    private ConfigService configService;  // Inject ConfigService to access the configuration
+    private boolean systemRunning = false;
 
-    // Private constructor to enforce Singleton
-    private TicketingCLI() {
-        input = new Scanner(System.in);
-    }
-
-    // Singleton pattern to ensure only one instance of TicketingCLI
-    public static TicketingCLI getInstance() {
-        if (instance == null) {
-            lock.lock();
-            try {
-                if (instance == null) {
-                    instance = new TicketingCLI();
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        return instance;
-    }
-
-    // Method to start the system and display the current configuration
-    public void start() {
-        Scanner scanner = new Scanner(System.in);
-
-        // Get system parameters from the admin
-        System.out.println("Enter Max Tickets: ");
-        int maxTicket = scanner.nextInt();
-        System.out.println("Enter Total Tickets: ");
-        int totalTickets = scanner.nextInt();
-        System.out.println("Enter Vendor Release Rate: ");
-        int vendorReleaseRate = scanner.nextInt();
-        System.out.println("Enter Customer Retrieval Rate: ");
-        int customerRetrievalRate = scanner.nextInt();
-
-        // Create a configuration object and set the parameters
-        SystemConfig systemConfig = new SystemConfig();
-        systemConfig.setMaxTicketCapacity(maxTicket);
-        systemConfig.setTotalTickets(totalTickets);
-        systemConfig.setVendorReleaseRate(vendorReleaseRate);
-        systemConfig.setUserRetrievalRate(customerRetrievalRate);
-
-        // Write this configuration to a config.json file
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            objectMapper.writeValue(new File("config.json"), systemConfig);
-            System.out.println("Configuration saved to config.json");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Initialize services after configuration is loaded
-        initializeService();
-
-        // Allow user to start or stop the system
-        System.out.print("Enter START to Start the System: ");
-        while (true) {
-            String command = scanner.nextLine().trim().toUpperCase();
-            if ("START".equals(command)) {
-                System.out.println("Starting the System...");
-                ticketingService.startSystem();  // Use the service instance
-                break;
-            } else if ("STOP".equals(command)) {
-                System.out.println("Stopping the System...");
-                ticketingService.stopSystem();  // Use the service instance
-                break;  // Exit the loop
-            } else {
-                System.out.println("Invalid command. Only enter START or STOP");
-            }
-        }
-    }
-
-    // Configure the TicketingService after parameters are entered
-    private void initializeService() {
-        // Create instances of the services required by TicketingService
-        TicketPool ticketPool = TicketPool.totalTickets;  // Initialize TicketPool using the config
-        VendorService vendorService = new VendorService(configService, ticketPool);  // Pass ConfigService to VendorService
-        UserService userService = new UserService(configService, ticketPool);  // Pass ConfigService to UserService
-
-        // Initialize TicketingService with the required services
-        ticketingService = new TicketingService(vendorService, userService, ticketPool);
-    }
-
-    // Main method to run the CLI
     public static void main(String[] args) {
-        // Get the Singleton instance of TicketingCLI
-        TicketingCLI cli = TicketingCLI.getInstance();
-        cli.start();  // Start the system
+        TicketingCLI cli = new TicketingCLI();
+        cli.run();
+    }
+
+    public void run() {
+        logger.info("Welcome to the Ticket Management System CLI");
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+
+        while (!exit) {
+            displayMenu();
+            String choice = scanner.nextLine().trim();
+            handleMenuChoice(choice, scanner);
+        }
+        scanner.close();
+    }
+
+    private void displayMenu() {
+        System.out.println("\nMain Menu:");
+        System.out.println("1. Configure System");
+        System.out.println("2. Start System");
+        System.out.println("3. Stop System");
+        System.out.println("4. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private void handleMenuChoice(String choice, Scanner scanner) {
+        switch (choice) {
+            case "1":
+                configureSystem(scanner);
+                break;
+            case "2":
+                startSystem();
+                break;
+            case "3":
+                stopSystem();
+                break;
+            case "4":
+                logger.info("Exiting Ticket Management System CLI.");
+                System.out.println("Exiting Ticket Management System CLI.");
+                 // Ensure exit flag is set here
+                break;
+            default:
+                logger.warn("Invalid choice made by user: {}", choice);
+                System.out.println("Invalid choice. Please select a valid option.");
+        }
+    }
+
+    private void configureSystem(Scanner scanner) {
+        SystemConfig config = new SystemConfig();
+
+        System.out.print("Enter total tickets: ");
+        config.setTotalTickets(getValidatedInteger(scanner));
+
+        System.out.print("Enter max ticket capacity: ");
+        config.setMaxTicketCapacity(getValidatedInteger(scanner));
+
+        System.out.print("Enter vendor release rate: ");
+        config.setVendorReleaseRate(getValidatedInteger(scanner));
+
+        System.out.print("Enter customer retrieval rate: ");
+        config.setUserRetrievalRate(getValidatedInteger(scanner));
+
+        SystemConfig.saveConfig(config);
+        logger.info("System configuration saved successfully:\n{}", config);
+    }
+
+    private void startSystem() {
+        if (systemRunning) {
+            logger.warn("Attempted to start the system, but it is already running.");
+            System.out.println("The system is already running!");
+        } else {
+            systemRunning = true;
+            logger.info("System started successfully.");
+            System.out.println("System started successfully.");
+        }
+    }
+
+    private void stopSystem() {
+        if (!systemRunning) {
+            logger.warn("Attempted to stop the system, but it is not currently running.");
+            System.out.println("The system is not currently running.");
+        } else {
+            systemRunning = false;
+            logger.info("System stopped successfully.");
+            System.out.println("System stopped successfully.");
+        }
+    }
+
+    private int getValidatedInteger(Scanner scanner) {
+        int value;
+        while (true) {
+            try {
+                value = Integer.parseInt(scanner.nextLine().trim());
+                if (value < 0) {
+                    throw new NumberFormatException("Value must be non-negative.");
+                }
+                break;
+            } catch (NumberFormatException e) {
+                logger.error("Invalid input for integer validation: {}", e.getMessage());
+                System.out.print("Invalid input. Please enter a valid non-negative integer: ");
+            }
+        }
+        return value;
     }
 }

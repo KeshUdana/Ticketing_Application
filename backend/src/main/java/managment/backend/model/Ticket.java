@@ -8,11 +8,11 @@ import jakarta.persistence.*;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ticketID;
+    public int ticketID;
     @Column(name="Price")
-    private double ticketPrice;
+    public double ticketPrice;
     @Column(name="Availability")
-    private boolean isAvailable;
+    public boolean isAvailable;
 
     @ManyToOne
     @JoinColumn(name = "VendorID")//Foreign Key

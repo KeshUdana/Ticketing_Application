@@ -13,10 +13,11 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserService {
     private final ConfigService configService;
-    private final TicketPool ticketPool; // Shared pool for tickets
+    private final TicketPool ticketPool; // Injected TicketPool instance
     private SystemConfig config;
     private ExecutorService executorService; // For managing customer threads
-@Autowired
+
+    @Autowired
     public UserService(ConfigService configService, TicketPool ticketPool) {
         this.configService = configService;
         this.ticketPool = ticketPool;
@@ -34,23 +35,21 @@ public class UserService {
         for (int i = 0; i < customerThreads; i++) {
             executorService.submit(() -> {
                 try {
-                    int ticketId = ticketPool.retrieveTicket();
-                    if (ticketId != -1) {  // Assuming -1 indicates no tickets are available
+                    Integer ticketId = ticketPool.retrieveTicket();
+                    if (ticketId != null) { // Ticket retrieved successfully
                         System.out.println("Customer purchased ticket #" + ticketId);
                     }
                 } catch (Exception e) {
-                    System.out.println("No tickets available for purchase.");
+                    System.out.println("Error while retrieving a ticket: " + e.getMessage());
                 }
             });
         }
     }
 
-    // Method to stop customer threads gracefully
     public void stopCustomerThreads() {
         System.out.println("Stopping customer threads...");
         if (executorService != null) {
             try {
-                // Gracefully shutting down the executor service
                 executorService.shutdown();
                 if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
                     executorService.shutdownNow();
