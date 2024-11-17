@@ -30,12 +30,13 @@ public class ConfigService {
             ConfigManager.saveConfig(config);  // Save the default config to a file
         }
     }
+
     // Get configuration values
     public SystemConfig getConfig() {
         return config;
     }
 
-    // Create a default configuration in case system crashes. This si fri testing reasns only
+    // Create a default configuration in case system crashes. This is for testing reasons only.
     private SystemConfig createDefaultConfig() {
         SystemConfig defaultConfig = new SystemConfig();
         defaultConfig.setMaxTicketCapacity(100);  // Default value for max tickets

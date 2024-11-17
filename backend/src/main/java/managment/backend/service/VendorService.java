@@ -23,7 +23,9 @@ public class VendorService {
 
     @PostConstruct
     public void init() {
-        this.config = configService.getConfig();
+        this.config = configService.getConfig();  // Getting the configuration directly
+        int totalTickets = config.getTotalTickets(); // Access the total tickets directly from the config
+        System.out.println("Total tickets available in the system: " + totalTickets); // Logging for validation
     }
 
     public void startVendorThreads() {

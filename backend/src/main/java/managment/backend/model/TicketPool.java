@@ -10,9 +10,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class TicketPool {
+
     private final BlockingQueue<Integer> ticketQueue;
     private final AtomicInteger ticketCounter;
     private final ConfigService configService;
+
 
     // Inject ConfigService to load the total tickets capacity from the config
     @Autowired
@@ -30,7 +32,7 @@ public class TicketPool {
 
         // Add initial tickets to the pool
         for (int i = 0; i < totalTickets; i++) {
-            boolean ticketID = ticketQueue.offer(i + 1);  // Ticket IDs start from 1
+            ticketQueue.offer(i + 1);  // Ticket IDs start from 1
         }
     }
 
