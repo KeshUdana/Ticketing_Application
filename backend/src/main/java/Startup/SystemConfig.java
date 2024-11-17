@@ -2,9 +2,10 @@ package Startup;
 
 public class SystemConfig {
     private int totalTickets; //total tickets in System
+    private int maxTicketCapacity;//maximum tickets in System
     private int vendorReleaseRate;
     private int userRetrievalRate;
-    private int maxTicketCapacity;//maximum tickets in System
+
 
 
 
@@ -34,5 +35,17 @@ public class SystemConfig {
     public void setMaxTicketCapacity(int maxTicketCapacity) {
         this.maxTicketCapacity = maxTicketCapacity;
     }
-}
+
+    @Override
+    public String toString(){
+        return "TicketConfig{" +
+                "maxTicketCapacity=" + maxTicketCapacity +
+                ", totalTickets=" + totalTickets +
+                ", vendorReleaseRate=" + vendorReleaseRate +
+                ", customerRetrievalRate=" + userRetrievalRate +
+                '}';
+        }
+    }
+
+
 

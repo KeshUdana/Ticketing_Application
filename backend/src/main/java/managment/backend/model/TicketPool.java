@@ -1,7 +1,7 @@
 package managment.backend.model;
 
-import Startup.ConfigManager;
 import managment.backend.service.ConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
@@ -10,12 +10,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class TicketPool {
-
     private final BlockingQueue<Integer> ticketQueue;
     private final AtomicInteger ticketCounter;
     private final ConfigService configService;
 
     // Inject ConfigService to load the total tickets capacity from the config
+    @Autowired
     public TicketPool(ConfigService configService) {
         this.configService = configService;
 
@@ -30,29 +30,28 @@ public class TicketPool {
 
         // Add initial tickets to the pool
         for (int i = 0; i < totalTickets; i++) {
-            ticketQueue.offer(i + 1);  // Ticket IDs start from 1
+            boolean ticketID = ticketQueue.offer(i + 1);  // Ticket IDs start from 1
         }
     }
 
     // Add a new ticket to the pool
     public boolean addTicket() {
         int totalTickets = ticketQueue.remainingCapacity() + ticketQueue.size(); // Dynamic capacity
-
         if (ticketCounter.get() < totalTickets) {
             try {
                 int newTicket = ticketCounter.incrementAndGet();
                 ticketQueue.put(newTicket);
                 System.out.println("Ticket #" + newTicket + " added to the pool.");
-                return true;  // Indicate the ticket was added successfully
+                return true;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        return false;  // Failure to add ticket
+        return false;
     }
 
     // Retrieve a ticket from the pool
-    public Integer retrieveTicket(){
+    public Integer retrieveTicket() {
         try {
             Integer ticket = ticketQueue.take();
             System.out.println("Ticket #" + ticket + " retrieved from the pool.");

@@ -30,6 +30,10 @@ public class ConfigService {
             ConfigManager.saveConfig(config);  // Save the default config to a file
         }
     }
+    // Get configuration values
+    public SystemConfig getConfig() {
+        return config;
+    }
 
     // Create a default configuration in case system crashes. This si fri testing reasns only
     private SystemConfig createDefaultConfig() {
@@ -39,10 +43,5 @@ public class ConfigService {
         defaultConfig.setVendorReleaseRate(5);  // Default value for vendor release rate
         defaultConfig.setUserRetrievalRate(2);  // Default value for user retrieval rate
         return defaultConfig;
-    }
-
-    // Get configuration values
-    public SystemConfig getConfig() {
-        return config;
     }
 }

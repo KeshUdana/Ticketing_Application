@@ -3,8 +3,6 @@ package managment.backend.service;
 import Startup.SystemConfig;
 import jakarta.annotation.PostConstruct;
 import managment.backend.model.TicketPool;
-import managment.backend.service.ConfigService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
@@ -29,13 +27,15 @@ public class VendorService {
     }
 
     public void startVendorThreads() {
+        System.out.println("Vendor thread Creation started");
         int vendorThreads = config.getVendorReleaseRate(); // Get vendor thread rate from config
         executorService = Executors.newFixedThreadPool(vendorThreads); // Dynamically adjust the number of threads
 
         for (int i = 0; i < vendorThreads; i++) {
             executorService.submit(() -> {
+                System.out.println("Vendor thread running");
                 try {
-                    int ticketId = ticketPool.retrieveTicket(); // Simulate ticket retrieval
+                    boolean ticketId = ticketPool.addTicket(); // Simulate ticket addition
                     System.out.println("Vendor released ticket #" + ticketId);
                 } catch (Exception e) {
                     System.out.println("No tickets available for release.");
@@ -57,17 +57,6 @@ public class VendorService {
             } catch (InterruptedException e) {
                 executorService.shutdownNow();
             }
-        }
-    }
-
-    // Scheduled task to release tickets at a fixed rate
-    @Scheduled(fixedRate = 1000) // Run every second
-    public void releaseTickets() {
-        int vendorReleaseRate = config.getVendorReleaseRate(); // Get release rate from config
-
-        for (int i = 0; i < vendorReleaseRate; i++) {
-            int ticketId = ticketPool.addTicket(); // Add a new ticket to the pool
-            System.out.println("Vendor released ticket #" + ticketId);
         }
     }
 }

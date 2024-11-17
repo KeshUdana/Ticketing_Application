@@ -3,6 +3,7 @@ package managment.backend.service;
 import Startup.SystemConfig;
 import jakarta.annotation.PostConstruct;
 import managment.backend.model.TicketPool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
@@ -15,7 +16,7 @@ public class UserService {
     private final TicketPool ticketPool; // Shared pool for tickets
     private SystemConfig config;
     private ExecutorService executorService; // For managing customer threads
-
+@Autowired
     public UserService(ConfigService configService, TicketPool ticketPool) {
         this.configService = configService;
         this.ticketPool = ticketPool;

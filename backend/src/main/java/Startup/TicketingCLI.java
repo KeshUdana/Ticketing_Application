@@ -1,61 +1,160 @@
 package Startup;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.util.Scanner;
+
+public class TicketingCLI {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Get system parameters from the admin
+        System.out.println("Enter Max Tickets: ");
+        int maxTicket = scanner.nextInt();
+        System.out.println("Enter Total Tickets: ");
+        int totalTickets = scanner.nextInt();
+        System.out.println("Enter Vendor Release Rate: ");
+        int vendorReleaseRate = scanner.nextInt();
+        System.out.println("Enter Customer Retrieval Rate: ");
+        int customerRetrievalRate = scanner.nextInt();
+
+        // Create a configuration object and set the parameters
+        SystemConfig systemConfig = new SystemConfig();
+        systemConfig.setMaxTicketCapacity(maxTicket);
+        systemConfig.setTotalTickets(totalTickets);
+        systemConfig.setVendorReleaseRate(vendorReleaseRate);
+        systemConfig.setUserRetrievalRate(customerRetrievalRate);
+
+        // Write this configuration to a config.json file
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            objectMapper.writeValue(new File("config.json"), systemConfig);
+            System.out.println("Configuration saved to config.json");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+import managment.backend.service.ConfigService;
+import managment.backend.service.TicketingService;
+import managment.backend.service.VendorService;
+import managment.backend.service.UserService;
+import managment.backend.model.TicketPool;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Component
 public class TicketingCLI {
+
     private static TicketingCLI instance;  // Singleton instance of TicketingCLI
-    private static final ReentrantLock lock=new ReentrantLock();
+    private static final ReentrantLock lock = new ReentrantLock();
     private SystemConfig config;  // Holds the system configuration
     private BlockingQueue<Integer> ticketQueue;  // Queue to manage ticket availability
     private AtomicInteger ticketCounter;  // Counter to track the number of tickets issued
     private boolean running;  // Flag to track whether the system is running
     private Scanner input;  // Declare scanner as a field for user input
+    private TicketingService ticketingService; // Service dependency
 
-    // Constructor - Initializes the system
+    @Autowired
+    private ConfigService configService;  // Inject ConfigService to access the configuration
+
+    // Private constructor to enforce Singleton
     private TicketingCLI() {
-        // Instantiate the Scanner here, so it can be used in both methods
         input = new Scanner(System.in);
-
-        // Check if config.json exists before loading
-        File configFile = new File("config.json");
-        if (configFile.exists()) {
-            config = ConfigManager.loadConfig();  // Load existing configuration
-        } else {
-            // If config file doesn't exist, prompt user for input and save it
-            System.out.println("No configuration found. Setting up new configuration.");
-            config = new SystemConfig();  // Create a new configuration
-            setupConfig();  // Collect configuration from user
-        }
+        this.config = configService.getConfig();  // Get the config from ConfigService
         ticketQueue = new LinkedBlockingQueue<>();  // Initialize the ticket queue
         ticketCounter = new AtomicInteger(0);  // Initialize ticket counter
     }
 
     // Singleton pattern to ensure only one instance of TicketingCLI
     public static TicketingCLI getInstance() {
-        lock.lock();
-        try{
-        if(instance == null){
-            instance=new TicketingCLI();
-        }
-        }finally {
-            lock.unlock();
+        if (instance == null) {
+            lock.lock();
+            try {
+                if (instance == null) {
+                    instance = new TicketingCLI();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
         return instance;
-    }
-
-    // Method to collect and save configuration from the user
-    private void setupConfig() {
-        // Prompts user for input if no configuration file exists
-        config.setMaxTicketCapacity(getValidIntInput("Enter Maximum Tickets Capacity for the system: "));
-        config.setTotalTickets(getValidIntInput("Enter Total Tickets for the system: "));
-        config.setVendorReleaseRate(getValidIntInput("Enter Vendor Ticket Release Rate: "));
-        config.setUserRetrievalRate(getValidIntInput("Enter Customer Retrieval Rate: "));
-        ConfigManager.saveConfig(config);  // Save the configuration to a JSON file
     }
 
     // Method to start the system and display the current configuration
@@ -64,16 +163,20 @@ public class TicketingCLI {
         System.out.println("Current Configuration: ");
         System.out.println(config.toString());
 
+        // Initialize the service
+        initializeService();
+
         // Allow user to start or stop the system
         System.out.print("Enter START to Start the System: ");
         while (true) {
             String command = input.nextLine().trim().toUpperCase();
             if ("START".equals(command)) {
                 System.out.println("Starting the System...");
-               // startTicketing();   Start the ticketing process
+                ticketingService.startSystem();  // Use the service instance
+                break;
             } else if ("STOP".equals(command)) {
                 System.out.println("Stopping the System...");
-               // stopTicketing();  // Stop the ticketing process
+                ticketingService.stopSystem();  // Use the service instance
                 break;  // Exit the loop
             } else {
                 System.out.println("Invalid command. Only enter START or STOP");
@@ -81,108 +184,22 @@ public class TicketingCLI {
         }
     }
 
-    // Method to get valid integer input from the user
-    private int getValidIntInput(String prompt) {
-        int value;
-        while (true) {
-            System.out.println(prompt);
-            if (input.hasNextInt()) {
-                value = input.nextInt();
-                input.nextLine();  // Consume the leftover newline character
-                if (value > 0) {
-                    return value;  // Return the valid positive integer
-                }
-            } else {
-                input.next();  // discard invalid input
-            }
-            System.out.println("Invalid input. Enter a positive integer.");
-        }
-    }
-}
+    // Configure the TicketingService after parameters are entered
+    private void initializeService() {
+        // Create instances of the services required by TicketingService
+        VendorService vendorService = new VendorService(configService,ticketPool);  // Pass ConfigService to VendorService
+        UserService userService = new UserService(configService,ticketPool);  // Pass ConfigService to UserService
+        TicketPool ticketPool = new TicketPool(configService.getTotalTickets());
 
-    /* Method to get valid double input from the user
-    private double getValidDoubleInput(String prompt) {
-        double value;
-        while (true) {
-            System.out.print(prompt);
-            if (input.hasNextDouble()) {
-                value = input.nextDouble();
-                input.nextLine();  // Consume the leftover newline character
-                if (value > 0) {
-                    return value;  // Return the valid positive number
-                }
-            } else {
-                input.next();  // discard invalid input
-            }
-            System.out.println("Invalid input. Please enter a positive number.");
-        }
+        // Initialize TicketingService with the required services
+        ticketingService = new TicketingService(vendorService, userService, ticketPool);
     }
-
-    // Method to start the ticketing process (if not already running)
-    private void startTicketing() {
-        lock.lock();
-        try{
-        if(running){
-            System.out.println("Ticketing process is already running");
-            return;//Return of running
-        }
-        System.out.println("Start the ticketing process...");
-        running=true;
-        new Thread(this::vendorTickets).start();
-        new Thread(this::customerTickets).start();
-        }finally {
-            lock.unlock();
-        }
-    }
-    // Method to stop the ticketing process (if running)
-    private void stopTicketing() {
-        lock.lock();//Aquire the lock
-        try{
-        if(!running){
-            System.out.println("Ticketing Process is not Running");
-            return;
-        }
-        System.out.println("Stopping ticketing process...");
-        running=false;//set flag to let know the system has stopped
-        }finally {
-            lock.unlock();//rlease the lock
-        }
-    }
-
-    // Method to simulate the vendor releasing tickets
-    private void vendorTickets() {
-        while (running) {
-            try {
-                // If ticket counter is less than max capacity, release a new ticket
-                if (ticketCounter.get() < config.getMaxTicketCapacity()) {
-                    ticketQueue.put(ticketCounter.incrementAndGet());  // Add ticket to queue
-                    System.out.println("Vendor Added ticket #" + ticketCounter.get());
-                }
-                Thread.sleep((long) (1000 / config.getVendorReleaseRate()));  // Sleep based on vendor release rate
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();  // Handle interruption
-            }
-        }
-    }
-
-    // Method to simulate customers purchasing tickets
-    private void customerTickets() {
-        while (running) {
-            try {
-                Integer ticket = ticketQueue.take();  // Take a ticket from the queue
-                System.out.println("Ticket #" + ticket + " purchased by Customer");
-                Thread.sleep((long) (1000 / config.getUserRetrievalRate()));  // Sleep based on customer retrieval rate
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();  // Handle interruption
-            }
-        }
-    }
-
-
 
     // Main method to run the CLI
     public static void main(String[] args) {
-        TicketingCLI cli = TicketingCLI.getInstance();  // Get the singleton instance
+        // Get the Singleton instance of TicketingCLI
+        TicketingCLI cli = TicketingCLI.getInstance();
         cli.start();  // Start the system
     }
-} */
+}
+*/

@@ -3,14 +3,20 @@ package managment.backend;
 import Startup.TicketingCLI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.io.File;
 
 @SpringBootApplication
 public class BackendApplication {
 
 	public static void main(String[] args) {
-		// Initialize and run the CLI
-		TicketingCLI cli = TicketingCLI.getInstance();
-		cli.start(); // Gather config and validate
+		// Check if the config.json file exists
+		File configFile = new File("config.json");
+
+		// If the config.json file doesn't exist, run the CLI to gather the config
+		if (!configFile.exists()) {
+			// Run the TicketingCLI to gather configuration from the user
+			TicketingCLI.main(args);  // Directly call the main method of TicketingCLI
+		}
 
 		// Start Spring Boot application
 		SpringApplication.run(BackendApplication.class, args);
