@@ -1,61 +1,59 @@
 package managment.backend.model;
 
 import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name="Ticket")
-public class Ticket{
+@Table(name = "Ticket")
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int ticketID;
-    @Column(name="Price")
-    public double ticketPrice;
-    @Column(name="Availability")
-    public boolean isAvailable;
+    private int ticketID; // Changed to private (encapsulation best practice)
 
-    @ManyToOne
-    @JoinColumn(name = "VendorID")//Foreign Key
-    private Vendor vendor;
+    @Column(name = "Price")
+    private double ticketPrice; // Changed to private
 
-    //Tickets Constructors
-    public Ticket(double ticketPrice,boolean isAvailable,Vendor vendor){
-        this.ticketPrice=ticketPrice;
-        this.isAvailable=isAvailable;
-        this.vendor=vendor;
+    @Column(name = "Type")
+    private String ticketType; // Changed to private
+
+    @Column(name = "Timestamp")
+    private LocalDateTime timeStamp; // Changed to private
+
+    // Default constructor (required by JPA)
+    public Ticket() {}
+
+    // Parameterized constructor
+    public Ticket(double ticketPrice, String ticketType) {
+        this.ticketPrice = ticketPrice;
+        this.ticketType = ticketType;
+        this.timeStamp = LocalDateTime.now(); // Automatically sets the current time
     }
 
-    public Ticket(int i, double v) {}//Empty constructor for database
-
-    public Ticket() {
-
+    // Getters
+    public int getTicketID() {
+        return ticketID;
     }
-    // Required by JPA: JPA needs a no-argument constructor to instantiate the entity during
-    // persistence operations (e.g., retrieving data from the database).
 
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
 
-    //Getters
-    public int getTicketID(){return ticketID;}
-   public double getTicketPrice(){return ticketPrice;}
-    public boolean getAvailability(){return isAvailable;}
+    public String getTicketType() {
+        return ticketType;
+    }
 
-    //Setters
-    public void setTicketID(int ticketID){
-        this.ticketID=ticketID;
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
     }
-    public void setTicketPrice(double ticketPrice){
-        this.ticketPrice=ticketPrice;
-    }
-    public void setAvailability(boolean isAvailable){
-        this.isAvailable=isAvailable;
-    }
+
+    // Overriding toString for easy logging
     @Override
     public String toString() {
         return "Ticket{" +
                 "ticketID=" + ticketID +
                 ", ticketPrice=" + ticketPrice +
-                ", status=" + (isAvailable ? "AVAILABLE" : "RETRIEVED") +
+                ", ticketType='" + ticketType + '\'' +
+                ", timeStamp=" + timeStamp +
                 '}';
     }
-
 }

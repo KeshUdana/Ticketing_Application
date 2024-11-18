@@ -3,8 +3,7 @@ package Startup;
 import managment.backend.model.Ticket;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.File;
 import java.util.Scanner;
@@ -13,10 +12,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class TicketingCLI {
 
-    private static final Logger logger = LoggerFactory.getLogger(TicketingCLI.class);
 
     private boolean systemRunning = false;
-    private BlockingQueue<Ticket> ticketQueue = new ArrayBlockingQueue<>(100); // Adjust capacity as needed
+    private BlockingQueue<Ticket> ticketPool= new ArrayBlockingQueue<>(SystemConfig.getMaxTicketCapacity()); // Adjust capacity as needed
     private Thread producerThread;
     private Thread consumerThread;
 
@@ -39,12 +37,12 @@ public class TicketingCLI {
                     configureSystem(scanner);
                     break;
                 case "2":
-                    logger.info("Exiting Ticket Management System CLI.");
+                  //  logger.info("Exiting Ticket Management System CLI.");
                     System.out.println("Exiting Ticket Management System CLI.");
                     exit = true;
                     break;
                 default:
-                    logger.warn("Invalid choice made by user: {}", choice);
+                  //  logger.warn("Invalid choice made by user: {}", choice);
                     System.out.println("Invalid choice. Please select a valid option.");
             }
 
@@ -98,8 +96,8 @@ public class TicketingCLI {
         systemRunning = true;
 
         // Start producer and consumer threads
-        producerThread = new Thread(new ProducerService(ticketQueue));
-        consumerThread = new Thread(new ConsumerService(ticketQueue));
+        producerThread = new Thread(new ProducerService(ticketPool));
+        consumerThread = new Thread(new ConsumerService(ticketPool));
 
         producerThread.start();
         consumerThread.start();
@@ -123,7 +121,8 @@ public class TicketingCLI {
             consumerThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Error while stopping threads: {}", e.getMessage());
+           // logger.error("Error while stopping threads: {}", e.getMessage());
+            System.out.println("Error while stopping threads");
         }
 
         System.out.println("System stopped successfully.");

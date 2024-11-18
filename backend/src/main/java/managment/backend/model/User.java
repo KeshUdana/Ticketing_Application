@@ -2,14 +2,13 @@ package managment.backend.model;
 
 import jakarta.persistence.*;
 
-import java.math.BigInteger;
 
 @Entity
 @Table(name="Customer")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger userID;
+    private int userID;
     @Column(name="Username")
     private String userUsername;
     @Column(name="Email",nullable = false,unique = true)
@@ -17,16 +16,25 @@ public class User {
     @Column(name="Password")
     private String userPassword;
 
-    //Getters
+    //Constructor
+    public User(int userID,String userUsername,String userEmail,String userPassword){
+        this.userID=userID;
+        this.userUsername=userUsername;
+        this.userEmail=userEmail;
+        this.userPassword=userPassword;
+    }
 
-    public BigInteger getUserID(){return userID;}
+    public User() {}
+
+    //Getters
+    public int getUserID(){return userID;}
     public String getUserUsername(){return userUsername;}
     public String getUserEmail(){return userEmail;}
     public String getUserPassword(){return userPassword;}
 
     //Setters
 
-    public void setUserID(BigInteger userID){
+    public void setUserID(int userID){
         this.userID=userID;
     }
     public void setUserUsername(String userUsername){
@@ -37,6 +45,10 @@ public class User {
     }
     public void setUserPassword(String userPassword){
         this.userPassword=userPassword;
+    }
+
+    public String toString(){
+        return "User{"+"userID="+ userID+ '}';
     }
 
 }

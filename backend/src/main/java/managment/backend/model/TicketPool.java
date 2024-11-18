@@ -1,32 +1,49 @@
 package managment.backend.model;
 
 import Startup.SystemConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Component
 public class TicketPool {
 
-    private final BlockingQueue<Integer> ticketQueue;
-    private final AtomicInteger ticketCounter;
-
+    private final BlockingQueue<Ticket> ticketQueue;
+    // Constructor
     public TicketPool() {
 
+        this.ticketQueue = new LinkedBlockingQueue<>(SystemConfig.getTotalTickets()); // Initialize with fixed capacity
+    }
 
-        int totalTickets = SystemConfig.getTotalTickets();
-        if (totalTickets <= 0) {
-            throw new IllegalArgumentException("Ticket pool capacity must be greater than 0.");
-        }
+    // Add ticket to the pool
+    public void addTicket(Ticket ticket) throws InterruptedException {
+        ticketQueue.put(ticket); // Blocks if the queue is full
+        System.out.println("Ticket added: " + ticket);
+    }
 
-        this.ticketQueue = new LinkedBlockingQueue<>(totalTickets);
-        this.ticketCounter = new AtomicInteger(0);
+    // Retrieve ticket from the pool
+    public Ticket retrieveTicket() throws InterruptedException {
+        Ticket ticket = ticketQueue.take(); // Blocks if the queue is empty
+        System.out.println("Ticket retrieved: " + ticket);
+        return ticket;
+    }
 
-        for (int i = 0; i < totalTickets; i++) {
-            ticketQueue.offer(i + 1);
-        }
+    // Get the current number of tickets in the pool
+    public int getCurrentSize() {
+        return ticketQueue.size();
+    }
+
+    // Check if the pool is full
+    public boolean isFull() {
+        return ticketQueue.remainingCapacity() == 0;
+    }
+
+    // Check if the pool is empty
+    public boolean isEmpty() {
+        return ticketQueue.isEmpty();
     }
 }
+
