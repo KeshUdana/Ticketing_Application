@@ -3,19 +3,18 @@ package Startup;
 import managment.backend.model.Ticket;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
-
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class TicketingCLI {
 
-
     private boolean systemRunning = false;
-    private BlockingQueue<Ticket> ticketPool= new ArrayBlockingQueue<>(SystemConfig.getMaxTicketCapacity()); // Adjust capacity as needed
-    private Thread producerThread;
+    private BlockingQueue<Ticket> ticketPool;
+    private List<Thread> producerThreads = new ArrayList<>();
     private Thread consumerThread;
 
     private static final String CONFIG_FILE = "config.json";
@@ -37,12 +36,10 @@ public class TicketingCLI {
                     configureSystem(scanner);
                     break;
                 case "2":
-                  //  logger.info("Exiting Ticket Management System CLI.");
                     System.out.println("Exiting Ticket Management System CLI.");
                     exit = true;
                     break;
                 default:
-                  //  logger.warn("Invalid choice made by user: {}", choice);
                     System.out.println("Invalid choice. Please select a valid option.");
             }
 
@@ -95,14 +92,19 @@ public class TicketingCLI {
         }
         systemRunning = true;
 
-        // Start producer and consumer threads
-        producerThread = new Thread(new ProducerService(ticketPool));
+        // Start consumer thread
         consumerThread = new Thread(new ConsumerService(ticketPool));
-
-        producerThread.start();
         consumerThread.start();
 
-        System.out.println("System started successfully.");
+        // Dynamically calculate the number of producer threads based on Total Tickets and Max Ticket Capacity
+        int numProducerThreads = SystemConfig.getTotalTickets() / SystemConfig.getMaxTicketCapacity();
+        for (int i = 0; i < numProducerThreads; i++) {
+            Thread producerThread = new Thread(new ProducerService(ticketPool));
+            producerThreads.add(producerThread);
+            producerThread.start();
+        }
+
+        System.out.println("System started successfully with " + numProducerThreads + " vendor threads.");
     }
 
     private void stopSystem() {
@@ -113,15 +115,18 @@ public class TicketingCLI {
         systemRunning = false;
 
         // Interrupt threads and wait for them to finish
-        producerThread.interrupt();
+        for (Thread producerThread : producerThreads) {
+            producerThread.interrupt();
+        }
         consumerThread.interrupt();
 
         try {
-            producerThread.join();
+            for (Thread producerThread : producerThreads) {
+                producerThread.join();
+            }
             consumerThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-           // logger.error("Error while stopping threads: {}", e.getMessage());
             System.out.println("Error while stopping threads");
         }
 
@@ -142,6 +147,7 @@ public class TicketingCLI {
         System.out.print("Enter customer retrieval rate: ");
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
+        // Save the config to the JSON file
         SystemConfig.saveConfig(config);
         System.out.println("System configuration saved successfully.");
     }
