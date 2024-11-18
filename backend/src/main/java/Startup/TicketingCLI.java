@@ -1,6 +1,5 @@
 package Startup;
 
-
 import managment.backend.model.TicketPool;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
@@ -13,13 +12,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
-
 public class TicketingCLI {
 
     private boolean systemRunning = false;
 
     // Create the TicketPool object
-    private TicketPool ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getMaxTicketCapacity()));
+    private TicketPool ticketPool = new TicketPool(new ArrayBlockingQueue<>(100000));
 
     private List<Thread> producerThreads = new ArrayList<>();
     private Thread consumerThread;
@@ -55,6 +53,8 @@ public class TicketingCLI {
             // If config.json exists, allow access to the control panel
             if (new File(CONFIG_FILE).exists() && !exit) {
                 handleControlPanel(scanner);
+            } else {
+                System.out.println("Please configure the system first.");
             }
         }
         scanner.close();
@@ -109,7 +109,7 @@ public class TicketingCLI {
             numProducerThreads++;
         }
 
-        // Create vendor (producer) threads
+        // Create vendor (producer) threads dynamically based on calculated number of threads
         for (int i = 0; i < numProducerThreads; i++) {
             Vendor vendor = new Vendor();  // Create a new vendor for each thread
             Thread producerThread = new Thread(new ProducerService(ticketPool, vendor));
