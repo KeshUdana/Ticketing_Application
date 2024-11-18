@@ -14,15 +14,16 @@ public class ProducerService implements Runnable{
     public void run() {
         try {
             while (true) {
-                // Simulate creating a new ticket
-                Ticket newTicket = new Ticket(ticketIdCounter++, Math.random() * 100); // Random price
-                ticketQueue.put(newTicket); // Add ticket to the queue
-                System.out.println("Produced: " + newTicket);
+                // Create a new ticket with a unique ID and a random price
+                double price = Math.random() * 100; // Random price between 0 and 100
+                Ticket newTicket = new Ticket(ticketIdCounter++, price); // Increment ID for each new ticket
+                ticketQueue.put(newTicket); // Add the ticket to the queue
+                System.out.println("Added: " + newTicket);
                 Thread.sleep(1000); // Simulate time taken to produce a ticket
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.out.println("Ticket production interrupted.");
+            System.out.println("Vendor interrupted.");
         }
     }
 }

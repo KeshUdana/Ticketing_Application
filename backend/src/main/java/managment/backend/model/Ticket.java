@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="Ticket")
-public class Ticket {
+public class Ticket{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int ticketID;
@@ -26,6 +26,10 @@ public class Ticket {
     }
 
     public Ticket(int i, double v) {}//Empty constructor for database
+
+    public Ticket() {
+
+    }
     // Required by JPA: JPA needs a no-argument constructor to instantiate the entity during
     // persistence operations (e.g., retrieving data from the database).
 

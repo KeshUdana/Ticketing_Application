@@ -6,6 +6,7 @@ import managment.backend.service.ProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -19,6 +20,8 @@ public class TicketingCLI {
     private Thread producerThread; // Reference to producer thread
     private Thread consumerThread; // Reference to consumer thread
 
+    ///////////////////////////////////////////////////////////////////////
+    //Main Point here
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
@@ -33,37 +36,50 @@ public class TicketingCLI {
             displayMenu();
             String choice = scanner.nextLine().trim();
             exit = handleMenuChoice(choice, scanner); // Update exit flag
+
+            File configFile = new File("config.json");
+            if(configFile.exists()){
+                controlPanel();
+            }
         }
         scanner.close();
     }
 
     private void displayMenu() {
         System.out.println("\nMain Menu:");
+        System.out.println("\nWelcome System Administrator");
         System.out.println("1. Configure System");
-        System.out.println("2. Start System");
-        System.out.println("3. Stop System");
         System.out.println("4. Exit");
         System.out.print("Enter your choice: ");
     }
+    private void controlPanel(){
+        System.out.println("1. START");
+        System.out.println("2. STOP");
+        System.out.print("Enter your choice: ");
+    }
 
-    private boolean handleMenuChoice(String choice, Scanner scanner) {
-        switch (choice) {
+    private boolean handleMenuChoice(String menuchoice, Scanner scanner) {
+        switch (menuchoice) {
             case "1":
                 configureSystem(scanner);
                 break;
             case "2":
-                startSystem();
-                break;
-            case "3":
-                stopSystem();
-                break;
-            case "4":
                 logger.info("Exiting Ticket Management System CLI.");
                 System.out.println("Exiting Ticket Management System CLI.");
                 return true; // Set exit flag to true
             default:
-                logger.warn("Invalid choice made by user: {}", choice);
+                logger.warn("Invalid choice made by user: {}", menuchoice);
                 System.out.println("Invalid choice. Please select a valid option.");
+        }
+        return false; // Continue running
+    }
+    private boolean handleStartStopChoice(String choice, Scanner scanner) {
+        switch (choice) {
+            case "1":
+                startSystem();
+                break;
+            case "2":
+                stopSystem();
         }
         return false; // Continue running
     }
@@ -113,10 +129,23 @@ public class TicketingCLI {
     }
 
     private void configureSystem(Scanner scanner) {
-        // Your existing configuration logic...
+
 
         // Example of creating a new configuration object (assuming you have a config instance)
         SystemConfig config = new SystemConfig();
+        System.out.print("Enter total tickets: ");
+        config.setTotalTickets(getValidatedInteger(scanner));
+
+        System.out.print("Enter max ticket capacity: ");
+        config.setMaxTicketCapacity(getValidatedInteger(scanner));
+
+        System.out.print("Enter vendor release rate: ");
+        config.setVendorReleaseRate(getValidatedInteger(scanner));
+
+        System.out.print("Enter customer retrieval rate: ");
+        config.setUserRetrievalRate(getValidatedInteger(scanner));
+
+        SystemConfig.saveConfig(config);
         logger.info("System configuration saved successfully:\n{}", config);
     }
 

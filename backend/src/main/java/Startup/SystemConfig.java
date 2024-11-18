@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class SystemConfig {
     private static final Logger logger = LoggerFactory.getLogger(SystemConfig.class);
-    private int totalTickets; // Total tickets in the system
-    private int maxTicketCapacity; // Maximum tickets allowed in the system
+    private int totalTickets; // Total tickets in the system aka total transaction that should be done in a simulation
+    private int maxTicketCapacity; // Maximum tickets transactied within a second
     private int vendorReleaseRate; // Rate at which vendors release tickets
     private int userRetrievalRate; // Rate at which customers retrieve tickets
 

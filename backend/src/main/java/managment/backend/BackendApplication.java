@@ -16,6 +16,8 @@ public class BackendApplication {
 		if (!configFile.exists()) {
 			// Run the TicketingCLI to gather configuration from the user
 			TicketingCLI.main(args);  // Directly call the main method of TicketingCLI
+		}else{
+			System.out.println("CLI from previous running exists bro");
 		}
 
 		// Start Spring Boot application
