@@ -11,10 +11,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 public class TicketPool {
 
-    private final BlockingQueue<Ticket> ticketQueue;
+    private  BlockingQueue<Ticket> ticketQueue;
     // Constructor
-    public TicketPool() {
-
+    public TicketPool(BlockingQueue<Ticket>ticketQueue) {
         this.ticketQueue = new LinkedBlockingQueue<>(SystemConfig.getTotalTickets()); // Initialize with fixed capacity
     }
 
@@ -31,19 +30,10 @@ public class TicketPool {
         return ticket;
     }
 
-    // Get the current number of tickets in the pool
-    public int getCurrentSize() {
-        return ticketQueue.size();
+    // Getter
+    public BlockingQueue<Ticket>getTicketQueue(){
+        return ticketQueue;
     }
 
-    // Check if the pool is full
-    public boolean isFull() {
-        return ticketQueue.remainingCapacity() == 0;
-    }
-
-    // Check if the pool is empty
-    public boolean isEmpty() {
-        return ticketQueue.isEmpty();
-    }
 }
 

@@ -1,19 +1,26 @@
 package Startup;
 
-import managment.backend.model.Ticket;
+
+import managment.backend.model.TicketPool;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
+import managment.backend.model.User;
+import managment.backend.model.Vendor;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+
 
 public class TicketingCLI {
 
     private boolean systemRunning = false;
-    private BlockingQueue<Ticket> ticketPool;
+
+    // Create the TicketPool object
+    private TicketPool ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getMaxTicketCapacity()));
+
     private List<Thread> producerThreads = new ArrayList<>();
     private Thread consumerThread;
 
@@ -36,10 +43,12 @@ public class TicketingCLI {
                     configureSystem(scanner);
                     break;
                 case "2":
+                    // logger.info("Exiting Ticket Management System CLI.");
                     System.out.println("Exiting Ticket Management System CLI.");
                     exit = true;
                     break;
                 default:
+                    // logger.warn("Invalid choice made by user: {}", choice);
                     System.out.println("Invalid choice. Please select a valid option.");
             }
 
@@ -92,17 +101,26 @@ public class TicketingCLI {
         }
         systemRunning = true;
 
-        // Start consumer thread
-        consumerThread = new Thread(new ConsumerService(ticketPool));
-        consumerThread.start();
-
         // Dynamically calculate the number of producer threads based on Total Tickets and Max Ticket Capacity
         int numProducerThreads = SystemConfig.getTotalTickets() / SystemConfig.getMaxTicketCapacity();
+
+        // If there are remaining tickets, we need one more thread
+        if (SystemConfig.getTotalTickets() % SystemConfig.getMaxTicketCapacity() > 0) {
+            numProducerThreads++;
+        }
+
+        // Create vendor (producer) threads
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread producerThread = new Thread(new ProducerService(ticketPool));
+            Vendor vendor = new Vendor();  // Create a new vendor for each thread
+            Thread producerThread = new Thread(new ProducerService(ticketPool, vendor));
             producerThreads.add(producerThread);
             producerThread.start();
         }
+
+        // Create the consumer (user) thread
+        User user = new User();  // Create a user for the consumer thread
+        consumerThread = new Thread(new ConsumerService(ticketPool, user));
+        consumerThread.start();
 
         System.out.println("System started successfully with " + numProducerThreads + " vendor threads.");
     }
@@ -114,12 +132,15 @@ public class TicketingCLI {
         }
         systemRunning = false;
 
-        // Interrupt threads and wait for them to finish
+        // Interrupt all producer threads
         for (Thread producerThread : producerThreads) {
             producerThread.interrupt();
         }
+
+        // Interrupt the consumer thread
         consumerThread.interrupt();
 
+        // Wait for all threads to finish
         try {
             for (Thread producerThread : producerThreads) {
                 producerThread.join();
@@ -127,7 +148,7 @@ public class TicketingCLI {
             consumerThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.out.println("Error while stopping threads");
+            System.out.println("Error while stopping threads.");
         }
 
         System.out.println("System stopped successfully.");
@@ -147,7 +168,6 @@ public class TicketingCLI {
         System.out.print("Enter customer retrieval rate: ");
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
-        // Save the config to the JSON file
         SystemConfig.saveConfig(config);
         System.out.println("System configuration saved successfully.");
     }
