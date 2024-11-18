@@ -24,10 +24,10 @@ public class SystemConfig {
     }
 
     // Getters and Setters...
-    private int getTotalTickets(){return totalTickets;}
-    private int getMaxTicketCapacity(){return maxTicketCapacity;}
-    private int getVendorReleaseRate(){return vendorReleaseRate;}
-    private int getUserRetrievalRate(){return userRetrievalRate;}
+    public int getTotalTickets(){return totalTickets;}
+    public int getMaxTicketCapacity(){return maxTicketCapacity;}
+    public int getVendorReleaseRate(){return vendorReleaseRate;}
+    public int getUserRetrievalRate(){return userRetrievalRate;}
 
     protected void setTotalTickets(int totalTickets){this.totalTickets=totalTickets;}
     protected void setMaxTicketCapacity(int maxTicketCapacity){this.maxTicketCapacity=maxTicketCapacity;}

@@ -25,7 +25,7 @@ public class Ticket {
         this.vendor=vendor;
     }
 
-    public Ticket() {}//Empty constructor for database
+    public Ticket(int i, double v) {}//Empty constructor for database
     // Required by JPA: JPA needs a no-argument constructor to instantiate the entity during
     // persistence operations (e.g., retrieving data from the database).
 
