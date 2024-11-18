@@ -1,6 +1,6 @@
 package managment.backend.model;
 
-import managment.backend.service.ConfigService;
+import Startup.SystemConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +13,11 @@ public class TicketPool {
 
     private final BlockingQueue<Integer> ticketQueue;
     private final AtomicInteger ticketCounter;
-    private final ConfigService configService;
 
-    @Autowired
-    public TicketPool(ConfigService configService) {
-        this.configService = configService;
+    public TicketPool() {
 
-        int totalTickets = configService.getConfig().getTotalTickets();
+
+        int totalTickets = SystemConfig.getTotalTickets();
         if (totalTickets <= 0) {
             throw new IllegalArgumentException("Ticket pool capacity must be greater than 0.");
         }
@@ -30,34 +28,5 @@ public class TicketPool {
         for (int i = 0; i < totalTickets; i++) {
             ticketQueue.offer(i + 1);
         }
-    }
-
-    public boolean addTicket() {
-        if (ticketCounter.get() < ticketQueue.remainingCapacity() + ticketQueue.size()) {
-            try {
-                int newTicket = ticketCounter.incrementAndGet();
-                ticketQueue.put(newTicket);
-                System.out.println("Ticket #" + newTicket + " added to the pool.");
-                return true;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        return false;
-    }
-
-    public Integer retrieveTicket() {
-        try {
-            Integer ticket = ticketQueue.take();
-            System.out.println("Ticket #" + ticket + " retrieved from the pool.");
-            return ticket;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        return null;
-    }
-
-    public int getTicketCount() {
-        return ticketQueue.size();
     }
 }

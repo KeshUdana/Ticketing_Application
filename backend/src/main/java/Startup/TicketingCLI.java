@@ -17,121 +17,119 @@ public class TicketingCLI {
 
     private boolean systemRunning = false;
     private BlockingQueue<Ticket> ticketQueue = new ArrayBlockingQueue<>(100); // Adjust capacity as needed
-    private Thread producerThread; // Reference to producer thread
-    private Thread consumerThread; // Reference to consumer thread
+    private Thread producerThread;
+    private Thread consumerThread;
 
-    ///////////////////////////////////////////////////////////////////////
-    //Main Point here
+    private static final String CONFIG_FILE = "config.json";
+
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
 
     public void run() {
-        logger.info("Welcome to the Ticket Management System CLI");
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
         while (!exit) {
-            displayMenu();
+            displayMainMenu();
             String choice = scanner.nextLine().trim();
-            exit = handleMenuChoice(choice, scanner); // Update exit flag
+            switch (choice) {
+                case "1":
+                    configureSystem(scanner);
+                    break;
+                case "2":
+                    logger.info("Exiting Ticket Management System CLI.");
+                    System.out.println("Exiting Ticket Management System CLI.");
+                    exit = true;
+                    break;
+                default:
+                    logger.warn("Invalid choice made by user: {}", choice);
+                    System.out.println("Invalid choice. Please select a valid option.");
+            }
 
-            File configFile = new File("config.json");
-            if(configFile.exists()){
-                controlPanel();
+            // If config.json exists, allow access to the control panel
+            if (new File(CONFIG_FILE).exists() && !exit) {
+                handleControlPanel(scanner);
             }
         }
         scanner.close();
     }
 
-    private void displayMenu() {
+    private void displayMainMenu() {
         System.out.println("\nMain Menu:");
-        System.out.println("\nWelcome System Administrator");
         System.out.println("1. Configure System");
-        System.out.println("4. Exit");
-        System.out.print("Enter your choice: ");
-    }
-    private void controlPanel(){
-        System.out.println("1. START");
-        System.out.println("2. STOP");
+        System.out.println("2. Exit");
         System.out.print("Enter your choice: ");
     }
 
-    private boolean handleMenuChoice(String menuchoice, Scanner scanner) {
-        switch (menuchoice) {
-            case "1":
-                configureSystem(scanner);
-                break;
-            case "2":
-                logger.info("Exiting Ticket Management System CLI.");
-                System.out.println("Exiting Ticket Management System CLI.");
-                return true; // Set exit flag to true
-            default:
-                logger.warn("Invalid choice made by user: {}", menuchoice);
-                System.out.println("Invalid choice. Please select a valid option.");
+    private void handleControlPanel(Scanner scanner) {
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n////// CONTROL PANEL /////");
+            System.out.println("1. START");
+            System.out.println("2. STOP");
+            System.out.println("3. Return to Main Menu");
+            System.out.print("Enter your choice: ");
+
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    startSystem();
+                    break;
+                case "2":
+                    stopSystem();
+                    break;
+                case "3":
+                    backToMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
+            }
         }
-        return false; // Continue running
-    }
-    private boolean handleStartStopChoice(String choice, Scanner scanner) {
-        switch (choice) {
-            case "1":
-                startSystem();
-                break;
-            case "2":
-                stopSystem();
-        }
-        return false; // Continue running
     }
 
     private void startSystem() {
         if (systemRunning) {
-            logger.warn("Attempted to start the system, but it is already running.");
             System.out.println("The system is already running!");
-        } else {
-            systemRunning = true;
-
-            // Start producer and consumer threads
-            producerThread = new Thread(new ProducerService(ticketQueue));
-            consumerThread = new Thread(new ConsumerService(ticketQueue));
-
-            producerThread.start();
-            consumerThread.start();
-
-            logger.info("System started successfully.");
-            System.out.println("System started successfully.");
+            return;
         }
+        systemRunning = true;
+
+        // Start producer and consumer threads
+        producerThread = new Thread(new ProducerService(ticketQueue));
+        consumerThread = new Thread(new ConsumerService(ticketQueue));
+
+        producerThread.start();
+        consumerThread.start();
+
+        System.out.println("System started successfully.");
     }
 
     private void stopSystem() {
         if (!systemRunning) {
-            logger.warn("Attempted to stop the system, but it is not currently running.");
             System.out.println("The system is not currently running.");
-        } else {
-            systemRunning = false;
-            logger.info("Stopping system...");
-
-            // Optionally interrupt threads or manage shutdown here
-            producerThread.interrupt(); // Interrupt producer thread
-            consumerThread.interrupt(); // Interrupt consumer thread
-
-            try {
-                producerThread.join(); // Wait for producer thread to finish
-                consumerThread.join(); // Wait for consumer thread to finish
-            } catch (InterruptedException e) {
-                logger.error("Error while stopping threads: {}", e.getMessage());
-                Thread.currentThread().interrupt(); // Restore interrupted status
-            }
-
-            logger.info("System stopped successfully.");
-            System.out.println("System stopped successfully.");
+            return;
         }
+        systemRunning = false;
+
+        // Interrupt threads and wait for them to finish
+        producerThread.interrupt();
+        consumerThread.interrupt();
+
+        try {
+            producerThread.join();
+            consumerThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Error while stopping threads: {}", e.getMessage());
+        }
+
+        System.out.println("System stopped successfully.");
     }
 
     private void configureSystem(Scanner scanner) {
-
-
-        // Example of creating a new configuration object (assuming you have a config instance)
         SystemConfig config = new SystemConfig();
         System.out.print("Enter total tickets: ");
         config.setTotalTickets(getValidatedInteger(scanner));
@@ -146,23 +144,20 @@ public class TicketingCLI {
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
         SystemConfig.saveConfig(config);
-        logger.info("System configuration saved successfully:\n{}", config);
+        System.out.println("System configuration saved successfully.");
     }
 
     private int getValidatedInteger(Scanner scanner) {
-        int value;
         while (true) {
             try {
-                value = Integer.parseInt(scanner.nextLine().trim());
-                if (value < 0) {
-                    throw new NumberFormatException("Value must be non-negative.");
+                int value = Integer.parseInt(scanner.nextLine().trim());
+                if (value >= 0) {
+                    return value;
                 }
-                break;
+                System.out.print("Value must be non-negative. Please try again: ");
             } catch (NumberFormatException e) {
-                logger.error("Invalid input for integer validation: {}", e.getMessage());
-                System.out.print("Invalid input. Please enter a valid non-negative integer: ");
+                System.out.print("Invalid input. Please enter a valid integer: ");
             }
         }
-        return value;
     }
 }

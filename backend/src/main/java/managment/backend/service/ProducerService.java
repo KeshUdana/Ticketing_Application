@@ -1,4 +1,5 @@
 package managment.backend.service;
+import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 
 import java.util.concurrent.BlockingQueue;
@@ -19,7 +20,7 @@ public class ProducerService implements Runnable{
                 Ticket newTicket = new Ticket(ticketIdCounter++, price); // Increment ID for each new ticket
                 ticketQueue.put(newTicket); // Add the ticket to the queue
                 System.out.println("Added: " + newTicket);
-                Thread.sleep(1000); // Simulate time taken to produce a ticket
+                Thread.sleep(1000/ SystemConfig.getVendorReleaseRate()); // Simulate time taken to produce a ticket
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
