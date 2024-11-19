@@ -6,6 +6,7 @@ import managment.backend.service.ProducerService;
 import managment.backend.model.User;
 import managment.backend.model.Vendor;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,13 +82,12 @@ public class TicketingCLI {
         System.out.print("Enter customer retrieval rate: ");
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
+        // Save configuration and initialize TicketPool
         SystemConfig.saveConfig(config);
+        ticketPool = new TicketPool(new ArrayBlockingQueue<>(config.getTotalTickets()));
         System.out.println("System configuration saved successfully.");
 
-        if (new File(CONFIG_FILE).exists()) {
-            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
-            handleControlPanel(scanner);
-        }
+
     }
 
 
@@ -126,27 +126,32 @@ public class TicketingCLI {
         }
         systemRunning = true;
 
-        int totalTickets = SystemConfig.getTotalTickets();
-        int maxCapacity = SystemConfig.getMaxTicketCapacity();
+
+        // Load configuration
+        SystemConfig config = SystemConfig.loadConfig();
+
+        int totalTickets = config.getTotalTickets();
+        int maxCapacity = config.getMaxTicketCapacity();
 
         int numProducerThreads = totalTickets / maxCapacity;
-
         if (totalTickets % maxCapacity > 0) {
             numProducerThreads++;
         }
 
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread producerThread = new Thread(new ProducerService(ticketPool,vendor));
+            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1))));
             producerThreads.add(producerThread);
             producerThread.start();
+
         }
-
-        User user = new User();
-        consumerThread = new Thread(new ConsumerService(ticketPool, user));
-        consumerThread.start();
-
-        System.out.println("System started successfully with " + numProducerThreads + " vendors");
+        for(int i=0;i<numProducerThreads;i++) {
+            User user = new User("Consumer " + (i + 1));
+            consumerThread = new Thread(new ConsumerService(ticketPool, user));
+            consumerThread.start();
+        }
+       // System.out.println("System started successfully with " + numProducerThreads + " vendors");
     }
+
 
     private void stopSystem() {
         if (!systemRunning) {
@@ -155,11 +160,12 @@ public class TicketingCLI {
         }
         systemRunning = false;
 
-        for (Thread producerThread : producerThreads) {
-            producerThread.interrupt();
-        }
 
+        // Interrupt all threads
+        producerThreads.forEach(Thread::interrupt);
         consumerThread.interrupt();
+
+
 
         try {
             for (Thread producerThread : producerThreads) {

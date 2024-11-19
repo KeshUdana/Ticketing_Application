@@ -17,7 +17,7 @@ public class Vendor{
     private String vendorPassword;
 
     //Constructor
-    public Vendor(int vendorID,String vendorUsername,String vendorEmail,String vendorPassword){
+    public Vendor(String vendorID){//,String vendorUsername,String vendorEmail,String vendorPassword){
         this.vendorID=vendorID;
         this.vendorUsername=vendorUsername;
         this.vendorEmail=vendorEmail;
