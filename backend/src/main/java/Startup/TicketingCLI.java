@@ -17,12 +17,19 @@ public class TicketingCLI {
     private boolean systemRunning = false;
 
     // Create the TicketPool object
-    private TicketPool ticketPool = new TicketPool(new ArrayBlockingQueue<>(100000));
+    private TicketPool ticketPool;
 
     private List<Thread> producerThreads = new ArrayList<>();
     private Thread consumerThread;
 
     private static final String CONFIG_FILE = "config.json";
+
+    public TicketingCLI() {
+        // Initialize TicketPool
+        if (new File(CONFIG_FILE).exists()){
+            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
+        }
+    }
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
@@ -41,19 +48,17 @@ public class TicketingCLI {
                     configureSystem(scanner);
                     break;
                 case "2":
-                    // logger.info("Exiting Ticket Management System CLI.");
                     System.out.println("Exiting Ticket Management System CLI.");
                     exit = true;
                     break;
                 default:
-                    // logger.warn("Invalid choice made by user: {}", choice);
                     System.out.println("Invalid choice. Please select a valid option.");
             }
 
             // If config.json exists, allow access to the control panel
             if (new File(CONFIG_FILE).exists() && !exit) {
                 handleControlPanel(scanner);
-            } else {
+            } else if (!exit) {
                 System.out.println("Please configure the system first.");
             }
         }
@@ -101,24 +106,23 @@ public class TicketingCLI {
         }
         systemRunning = true;
 
-        // Dynamically calculate the number of producer threads based on Total Tickets and Max Ticket Capacity
-        int numProducerThreads = SystemConfig.getTotalTickets() / SystemConfig.getMaxTicketCapacity();
+        int totalTickets = SystemConfig.getTotalTickets();
+        int maxCapacity = SystemConfig.getMaxTicketCapacity();
 
-        // If there are remaining tickets, we need one more thread
-        if (SystemConfig.getTotalTickets() % SystemConfig.getMaxTicketCapacity() > 0) {
+        int numProducerThreads = totalTickets / maxCapacity;
+
+        if (totalTickets % maxCapacity > 0) {
             numProducerThreads++;
         }
 
-        // Create vendor (producer) threads dynamically based on calculated number of threads
         for (int i = 0; i < numProducerThreads; i++) {
-            Vendor vendor = new Vendor();  // Create a new vendor for each thread
-            Thread producerThread = new Thread(new ProducerService(ticketPool, vendor));
+            Vendor vendor = new Vendor();
+            Thread producerThread = new Thread(new ProducerService(ticketPool));
             producerThreads.add(producerThread);
             producerThread.start();
         }
 
-        // Create the consumer (user) thread
-        User user = new User();  // Create a user for the consumer thread
+        User user = new User();
         consumerThread = new Thread(new ConsumerService(ticketPool, user));
         consumerThread.start();
 
@@ -132,15 +136,12 @@ public class TicketingCLI {
         }
         systemRunning = false;
 
-        // Interrupt all producer threads
         for (Thread producerThread : producerThreads) {
             producerThread.interrupt();
         }
 
-        // Interrupt the consumer thread
         consumerThread.interrupt();
 
-        // Wait for all threads to finish
         try {
             for (Thread producerThread : producerThreads) {
                 producerThread.join();

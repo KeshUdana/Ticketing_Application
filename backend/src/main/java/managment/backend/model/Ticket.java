@@ -23,7 +23,8 @@ public class Ticket {
     public Ticket() {}
 
     // Parameterized constructor
-    public Ticket(double ticketPrice, String ticketType) {
+    public Ticket(int ticketID,double ticketPrice, String ticketType) {
+        this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
         this.ticketType = ticketType;
         this.timeStamp = LocalDateTime.now(); // Automatically sets the current time
