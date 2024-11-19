@@ -24,12 +24,7 @@ public class TicketingCLI {
 
     private static final String CONFIG_FILE = "config.json";
 
-    public TicketingCLI() {
-        // Initialize TicketPool
-        if (new File(CONFIG_FILE).exists()){
-            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
-        }
-    }
+
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
@@ -171,6 +166,10 @@ public class TicketingCLI {
 
         SystemConfig.saveConfig(config);
         System.out.println("System configuration saved successfully.");
+
+        if (new File(CONFIG_FILE).exists()){
+            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
+        }
     }
 
     private int getValidatedInteger(Scanner scanner) {
