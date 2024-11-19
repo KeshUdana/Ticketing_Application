@@ -24,7 +24,7 @@ public class Vendor{
         this.vendorPassword=vendorPassword;
     }
 
-    public Vendor() {}
+    public Vendor() {}//For JPA
 
     //Getters
     public int getVendorID(){return vendorID;}

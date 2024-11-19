@@ -18,6 +18,7 @@ public class TicketingCLI {
 
     // Create the TicketPool object
     private TicketPool ticketPool;
+    private Vendor vendor;//testing this to remove the damn errors
 
     private List<Thread> producerThreads = new ArrayList<>();
     private Thread consumerThread;
@@ -29,6 +30,13 @@ public class TicketingCLI {
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
+    }
+    private void displayMainMenu() {
+        System.out.println("+++++++++++Welcome to Ticketing Application++++++++++");
+        System.out.println("\nMain Menu:");
+        System.out.println("1. Configure System");
+        System.out.println("2. Exit");
+        System.out.print("Enter your choice: ");
     }
 
     public void run() {
@@ -59,13 +67,30 @@ public class TicketingCLI {
         }
         scanner.close();
     }
+    private void configureSystem(Scanner scanner) {
+        SystemConfig config = new SystemConfig();
+        System.out.print("Enter total tickets: ");
+        config.setTotalTickets(getValidatedInteger(scanner));
 
-    private void displayMainMenu() {
-        System.out.println("\nMain Menu:");
-        System.out.println("1. Configure System");
-        System.out.println("2. Exit");
-        System.out.print("Enter your choice: ");
+        System.out.print("Enter max ticket capacity: ");
+        config.setMaxTicketCapacity(getValidatedInteger(scanner));
+
+        System.out.print("Enter vendor release rate: ");
+        config.setVendorReleaseRate(getValidatedInteger(scanner));
+
+        System.out.print("Enter customer retrieval rate: ");
+        config.setUserRetrievalRate(getValidatedInteger(scanner));
+
+        SystemConfig.saveConfig(config);
+        System.out.println("System configuration saved successfully.");
+
+        if (new File(CONFIG_FILE).exists()) {
+            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
+            handleControlPanel(scanner);
+        }
     }
+
+
 
     private void handleControlPanel(Scanner scanner) {
         boolean backToMenu = false;
@@ -111,8 +136,7 @@ public class TicketingCLI {
         }
 
         for (int i = 0; i < numProducerThreads; i++) {
-            Vendor vendor = new Vendor();
-            Thread producerThread = new Thread(new ProducerService(ticketPool));
+            Thread producerThread = new Thread(new ProducerService(ticketPool,vendor));
             producerThreads.add(producerThread);
             producerThread.start();
         }
@@ -121,7 +145,7 @@ public class TicketingCLI {
         consumerThread = new Thread(new ConsumerService(ticketPool, user));
         consumerThread.start();
 
-        System.out.println("System started successfully with " + numProducerThreads + " vendor threads.");
+        System.out.println("System started successfully with " + numProducerThreads + " vendors");
     }
 
     private void stopSystem() {
@@ -150,27 +174,7 @@ public class TicketingCLI {
         System.out.println("System stopped successfully.");
     }
 
-    private void configureSystem(Scanner scanner) {
-        SystemConfig config = new SystemConfig();
-        System.out.print("Enter total tickets: ");
-        config.setTotalTickets(getValidatedInteger(scanner));
 
-        System.out.print("Enter max ticket capacity: ");
-        config.setMaxTicketCapacity(getValidatedInteger(scanner));
-
-        System.out.print("Enter vendor release rate: ");
-        config.setVendorReleaseRate(getValidatedInteger(scanner));
-
-        System.out.print("Enter customer retrieval rate: ");
-        config.setUserRetrievalRate(getValidatedInteger(scanner));
-
-        SystemConfig.saveConfig(config);
-        System.out.println("System configuration saved successfully.");
-
-        if (new File(CONFIG_FILE).exists()){
-            ticketPool = new TicketPool(new ArrayBlockingQueue<>(SystemConfig.getTotalTickets()));
-        }
-    }
 
     private int getValidatedInteger(Scanner scanner) {
         while (true) {

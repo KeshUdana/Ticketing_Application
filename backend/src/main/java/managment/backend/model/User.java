@@ -24,7 +24,7 @@ public class User {
         this.userPassword=userPassword;
     }
 
-    public User() {}
+    public User() {}//for JPA
 
     //Getters
     public int getUserID(){return userID;}
