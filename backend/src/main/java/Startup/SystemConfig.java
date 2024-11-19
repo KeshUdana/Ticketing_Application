@@ -2,7 +2,6 @@ package Startup;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SystemConfig {
-    private static final Logger logger = LoggerFactory.getLogger(SystemConfig.class);
+    private static final Logger logger = Logger.getLogger(SystemConfig.class.getName());
 
     private int totalTickets; // Total tickets in the system
     private int maxTicketCapacity; // Max tickets processed per second
@@ -41,7 +40,7 @@ public class SystemConfig {
             gson.toJson(config, writer);
             logger.info("Configuration saved successfully.");
         } catch (IOException e) {
-            logger.log(Level.parse("Failed to save configuration: {}"), e.getMessage());
+            logger.log(Level.SEVERE, "Failed to save configuration: {0}", e.getMessage());
         }
     }
 
@@ -50,7 +49,7 @@ public class SystemConfig {
         try (FileReader reader = new FileReader(CONFIG_FILE)) {
             return gson.fromJson(reader, SystemConfig.class);
         } catch (IOException e) {
-            logger.log(Level.parse("Failed to load configuration: {}"), e.getMessage());
+            logger.log(Level.SEVERE, "Failed to load configuration: {0}", e.getMessage());
             return new SystemConfig(); // Return a default configuration in case of failure
         }
     }

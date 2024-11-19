@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class Vendor{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int vendorID;
+    private String vendorID;
     @Column(name="Username")
     private String vendorUsername;
     @Column(name="Email",nullable = false,unique = true)
@@ -18,7 +18,7 @@ public class Vendor{
 
     //Constructor
     public Vendor(String vendorID){//,String vendorUsername,String vendorEmail,String vendorPassword){
-        this.vendorID=vendorID;
+        this.vendorID= vendorID;
         this.vendorUsername=vendorUsername;
         this.vendorEmail=vendorEmail;
         this.vendorPassword=vendorPassword;
@@ -27,14 +27,14 @@ public class Vendor{
     public Vendor() {}//For JPA
 
     //Getters
-    public int getVendorID(){return vendorID;}
+    public String getVendorID(){return vendorID;}
     public String getVendorUsername(){return vendorUsername;}
     public String getVendorEmail(){return vendorEmail;}
     public String getVendorPassword(){return vendorPassword;}
 
     //Setters
 
-    public void setVendorID(int vendorID){
+    public void setVendorID(String vendorID){
         this.vendorID=vendorID;
     }
     public void setVendorUsername(String vendorUsername){

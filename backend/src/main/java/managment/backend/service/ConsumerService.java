@@ -11,6 +11,7 @@ public class ConsumerService implements Runnable {
 
     private final TicketPool ticketPool;
     private final User user; // User object
+    public SystemConfig config;
     private volatile boolean running = true;
 
     // Constructor
@@ -31,7 +32,7 @@ public class ConsumerService implements Runnable {
                 System.out.println("User " + user.getUserID() + " retrieved: " + ticket); // Fixed: Replaced `User.getUserID()` with `user.getUserID()`
 
                 // Sleep for the global consumption rate duration
-                Thread.sleep(1000 / SystemConfig.getUserRetrievalRate());
+                Thread.sleep(1000 / config.getUserRetrievalRate());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

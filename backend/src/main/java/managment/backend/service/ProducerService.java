@@ -1,19 +1,23 @@
 package managment.backend.service;
 
-import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
 import managment.backend.model.Vendor;
 
 public class ProducerService implements Runnable {
-    private TicketPool ticketPool;
-    private boolean systemRunning;  // Flag to control when to stop the producer
-    private Vendor vendor;
+    private final TicketPool ticketPool;
+    private final Vendor vendor;
+    private final int vendorReleaseRate; // Vendor release rate extracted from config
+    private boolean systemRunning; // Flag to control when to stop the producer
 
-    public ProducerService(TicketPool ticketPool,Vendor vendor) {
+    public ProducerService(TicketPool ticketPool, Vendor vendor, int vendorReleaseRate) {
+        if (!ticketPool.isInitialized()) {
+            throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
+        }
         this.ticketPool = ticketPool;
-        this.systemRunning = true;  // Start with the producer running
-        this.vendor=vendor;
+        this.vendor = vendor;
+        this.vendorReleaseRate = vendorReleaseRate;
+        this.systemRunning = true; // Start with the producer running
     }
 
     // Method to stop the producer
@@ -24,18 +28,18 @@ public class ProducerService implements Runnable {
     @Override
     public void run() {
         try {
-            ticketPool.initialize(); // Ensure TicketPool is initialized
-            while (systemRunning) {  // Control the loop with systemRunning flag
+            while (systemRunning) { // Control the loop with the systemRunning flag
                 // Generate a new ticket
                 Ticket ticket = new Ticket();
 
                 // Add the ticket to the pool, blocking if the pool is full
                 ticketPool.addTicket(ticket);
-                // Log consumption
-                System.out.println("Vendor " + vendor.getVendorID() + " added " + ticket); // Fixed: Replaced `User.getUserID()` with `user.getUserID()`
 
-                // Simulate the vendor release rate
-                Thread.sleep(1000/SystemConfig.getVendorReleaseRate());
+                // Log ticket addition
+                System.out.println("Vendor " + vendor.getVendorID() + " added ticket: " + ticket);
+
+                // Simulate the vendor release rate (milliseconds per ticket)
+                Thread.sleep(1000 / vendorReleaseRate);
             }
         } catch (InterruptedException e) {
             System.out.println("Producer thread interrupted.");
