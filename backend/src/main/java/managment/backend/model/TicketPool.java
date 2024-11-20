@@ -12,7 +12,10 @@ public class TicketPool {
     private boolean initialized = false;
 
     // Private constructor for Singleton pattern
-    private TicketPool() {}
+    public TicketPool() {}
+
+    public TicketPool(ArrayBlockingQueue<Object> objects) {
+    }
 
     // Singleton getter
     public static synchronized TicketPool getInstance() {
