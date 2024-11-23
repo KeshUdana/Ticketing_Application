@@ -139,7 +139,7 @@ public class TicketingCLI {
         }
 
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1))));
+            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1)),config.getVendorReleaseRate()));
             producerThreads.add(producerThread);
             producerThread.start();
 
