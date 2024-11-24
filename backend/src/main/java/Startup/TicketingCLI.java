@@ -6,32 +6,28 @@ import managment.backend.service.ProducerService;
 import managment.backend.model.User;
 import managment.backend.model.Vendor;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class TicketingCLI {
 
-    private boolean systemRunning = false;
+    private volatile boolean systemRunning = false;
 
-    // Create the TicketPool object
+    // Shared resources
     private TicketPool ticketPool;
-    private Vendor vendor;//testing this to remove the damn errors
-
     private List<Thread> producerThreads = new ArrayList<>();
-    private Thread consumerThread;
+    private List<Thread> consumerThreads = new ArrayList<>();
+
 
     private static final String CONFIG_FILE = "config.json";
-
-
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
+
     private void displayMainMenu() {
         System.out.println("+++++++++++Welcome to Ticketing Application++++++++++");
         System.out.println("\nMain Menu:");
@@ -68,6 +64,7 @@ public class TicketingCLI {
         }
         scanner.close();
     }
+
     private void configureSystem(Scanner scanner) {
         SystemConfig config = new SystemConfig();
         System.out.print("Enter total tickets: ");
@@ -83,22 +80,18 @@ public class TicketingCLI {
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
         // Save configuration
-        SystemConfig.saveConfig(config);System.out.println("System configuration saved successfully.");
+        SystemConfig.saveConfig(config);
+        System.out.println("System configuration saved successfully.");
 
-        //Inititlize ticketpool
-        // Initialize TicketPool using the singleton pattern
+        // Initialize TicketPool
         try {
-            TicketPool ticketPool = TicketPool.getInstance(); // Get the singleton instance
-            ticketPool.initialize(config); // Initialize with the config
-            System.out.println("System configuration saved and TicketPool initialized successfully.");
-        } catch (IllegalStateException e) {
-            System.out.println("Error: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
+            this.ticketPool = TicketPool.getInstance();
+            ticketPool.initialize(config);
+            System.out.println("TicketPool initialized successfully.");
+        } catch (IllegalStateException | IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-
 
     private void handleControlPanel(Scanner scanner) {
         boolean backToMenu = false;
@@ -134,52 +127,53 @@ public class TicketingCLI {
         }
         systemRunning = true;
 
-
         // Load configuration
         SystemConfig config = SystemConfig.loadConfig();
-
         int totalTickets = config.getTotalTickets();
         int maxCapacity = config.getMaxTicketCapacity();
+        int vendorReleaseRate = config.getVendorReleaseRate();
+        int userRetrievalRate = config.getUserRetrievalRate();
 
-        int numProducerThreads = totalTickets / maxCapacity;
-        if (totalTickets % maxCapacity > 0) {
-            numProducerThreads++;
-        }
+        int numProducerThreads = totalTickets / maxCapacity + (totalTickets % maxCapacity > 0 ? 1 : 0);
 
+        // Start producer threads
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1)),config.getVendorReleaseRate()));
+            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1)),config));
             producerThreads.add(producerThread);
             producerThread.start();
-
         }
-        for(int i=0;i<numProducerThreads;i++) {
-            User user = new User("Consumer " + (i + 1));
-            consumerThread = new Thread(new ConsumerService(ticketPool, user));
+
+        // Start consumer threads
+        for (int i = 0; i < numProducerThreads; i++) {
+            Thread consumerThread = new Thread(new ConsumerService(ticketPool, new User("Consumer " + (i + 1)), config));
+            consumerThreads.add(consumerThread);
             consumerThread.start();
         }
-       // System.out.println("System started successfully with " + numProducerThreads + " vendors");
-    }
 
+        System.out.println("System started successfully with " + numProducerThreads + " producer-consumer pairs.");
+    }
 
     private void stopSystem() {
         if (!systemRunning) {
             System.out.println("The system is not currently running.");
             return;
         }
+
         systemRunning = false;
 
-
-        // Interrupt all threads
+        // Stop producer threads
         producerThreads.forEach(Thread::interrupt);
-        consumerThread.interrupt();
 
-
+        // Stop consumer threads
+        consumerThreads.forEach(Thread::interrupt);
 
         try {
-            for (Thread producerThread : producerThreads) {
-                producerThread.join();
+            for (Thread thread : producerThreads) {
+                thread.join();
             }
-            consumerThread.join();
+            for (Thread thread : consumerThreads) {
+                thread.join();
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("Error while stopping threads.");
@@ -187,8 +181,6 @@ public class TicketingCLI {
 
         System.out.println("System stopped successfully.");
     }
-
-
 
     private int getValidatedInteger(Scanner scanner) {
         while (true) {

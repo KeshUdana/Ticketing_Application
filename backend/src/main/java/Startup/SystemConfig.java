@@ -29,10 +29,27 @@ public class SystemConfig {
     public int getVendorReleaseRate() { return vendorReleaseRate; }
     public int getUserRetrievalRate() { return userRetrievalRate; }
 
-    public void setTotalTickets(int totalTickets) { this.totalTickets = totalTickets; }
-    public void setMaxTicketCapacity(int maxTicketCapacity) { this.maxTicketCapacity = maxTicketCapacity; }
-    public void setVendorReleaseRate(int vendorReleaseRate) { this.vendorReleaseRate = vendorReleaseRate; }
-    public void setUserRetrievalRate(int userRetrievalRate) { this.userRetrievalRate = userRetrievalRate; }
+    public void setTotalTickets(int totalTickets) {
+        if(totalTickets>0){
+            this.totalTickets = totalTickets;
+        }else{
+            System.out.println("Cant be less than 0");
+        }
+    }
+    public void setMaxTicketCapacity(int maxTicketCapacity) {
+        if(maxTicketCapacity>0){this.maxTicketCapacity = maxTicketCapacity;
+        }else{
+            System.out.println("Cant be less than 0");
+        }
+    }
+    public void setVendorReleaseRate(int vendorReleaseRate) {
+        if(vendorReleaseRate>0){this.vendorReleaseRate = vendorReleaseRate;}else{
+        System.out.println("Cant be less than 0");
+    } }
+    public void setUserRetrievalRate(int userRetrievalRate) {
+        if(userRetrievalRate>0){this.userRetrievalRate = userRetrievalRate;}else{
+        System.out.println("Cant be less than 0");
+        } }
 
     // Save Configuration to JSON
     public static void saveConfig(SystemConfig config) {

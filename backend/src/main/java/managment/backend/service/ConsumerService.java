@@ -11,14 +11,16 @@ public class ConsumerService implements Runnable {
 
     private final TicketPool ticketPool;
     private final User user; // User object
+  //  private final int userRetrievalRate;
     public SystemConfig config;
     private volatile boolean running = true;
 
     // Constructor
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public ConsumerService(TicketPool ticketPool, User user) {
+    public ConsumerService(TicketPool ticketPool, User user,SystemConfig config) {
         this.ticketPool = ticketPool;
         this.user = user;
+        this.config=config;
     }
 
     @Override

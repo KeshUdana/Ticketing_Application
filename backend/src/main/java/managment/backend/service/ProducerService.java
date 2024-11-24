@@ -1,5 +1,6 @@
 package managment.backend.service;
 
+import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
 import managment.backend.model.Vendor;
@@ -7,24 +8,25 @@ import managment.backend.model.Vendor;
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
-    private final int vendorReleaseRate; // Vendor release rate extracted from config
+    private final SystemConfig config;
+    //private final int vendorReleaseRate;  Vendor release rate extracted from config
+
     private boolean systemRunning; // Flag to control when to stop the producer
 
-    public ProducerService(TicketPool ticketPool, Vendor vendor, int vendorReleaseRate) {
+    public ProducerService(TicketPool ticketPool, Vendor vendor, SystemConfig config) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }
         this.ticketPool = ticketPool;
         this.vendor = vendor;
-        this.vendorReleaseRate = vendorReleaseRate;
+        this.config=config;
         this.systemRunning = true; // Start with the producer running
     }
 
     // Method to stop the producer
-   /* public void stopProducing() {
+   public void stopProducing() {
         systemRunning = false;
     }
-*/
     @Override
     public void run() {
         try {
@@ -39,7 +41,7 @@ public class ProducerService implements Runnable {
                 System.out.println("Vendor " + vendor.getVendorID() + " added ticket: " + ticket);
 
                 // Simulate the vendor release rate (milliseconds per ticket)
-                Thread.sleep(1000 / vendorReleaseRate);
+                Thread.sleep(1000 /config.getVendorReleaseRate());
             }
         } catch (InterruptedException e) {
             System.out.println("Producer thread interrupted.");
