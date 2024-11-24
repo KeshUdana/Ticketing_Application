@@ -21,10 +21,10 @@ public class ProducerService implements Runnable {
     }
 
     // Method to stop the producer
-    public void stopProducing() {
+   /* public void stopProducing() {
         systemRunning = false;
     }
-
+*/
     @Override
     public void run() {
         try {
