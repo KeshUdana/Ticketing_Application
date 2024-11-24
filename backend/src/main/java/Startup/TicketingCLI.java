@@ -196,3 +196,41 @@ public class TicketingCLI {
         }
     }
 }
+/*
+
+The initialization of the producer and consumer threads in the Ticketing CLI class is primarily about starting the concurrent execution of tasks (vendors producing tickets and users consuming them). However, the rate parameters (like vendorReleaseRate and userRetrievalRate) are still essential and utilized indirectly in the services (ProducerService and ConsumerService) through the config object that is passed to each thread.
+
+Here’s a breakdown of what is happening:
+
+Purpose of Initialization in Ticketing CLI
+Thread Creation:
+
+The ProducerService and ConsumerService instances are created and passed to their respective threads. These services need the configuration (config) object to retrieve the rates dynamically.
+Concurrency Setup:
+
+The number of threads (numProducerThreads and numConsumerThreads) defines how many simultaneous producers and consumers are running. The rates themselves (vendorReleaseRate and userRetrievalRate) dictate how fast each thread operates but are not set explicitly in the CLI.
+Flexibility:
+
+The rates are not hard-coded in the CLI but instead depend on the SystemConfig object. This allows you to control the behavior globally by adjusting the SystemConfig settings.
+Where Are the Rates Used?
+In the example, the config object (which contains vendorReleaseRate and userRetrievalRate) is passed to each instance of ProducerService and ConsumerService:
+java
+Copy code
+Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1)), config));
+Thread consumerThread = new Thread(new ConsumerService(ticketPool, new User("Consumer " + (i + 1)), config));
+These services then use the getter methods (getVendorReleaseRate() and getUserRetrievalRate()) in their logic to determine how frequently they should perform their actions (e.g., adding or retrieving tickets).
+Separation of Concerns
+The CLI is responsible for:
+
+Starting the system: Initializing threads and creating the ProducerService and ConsumerService objects.
+Passing configuration: Supplying the config object to the services.
+The services (ProducerService and ConsumerService) are responsible for:
+
+Using the rates dynamically: Fetching the rates from SystemConfig via the getter methods and controlling thread behavior accordingly.
+By following this approach:
+
+Configuration logic remains centralized in SystemConfig.
+Service logic handles operational details like ticket production and retrieval.
+CLI logic handles orchestration (thread creation and system start/stop).
+This modular design makes your code easier to maintain, debug, and scale.
+ */
