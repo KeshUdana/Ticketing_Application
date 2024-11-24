@@ -82,12 +82,20 @@ public class TicketingCLI {
         System.out.print("Enter customer retrieval rate: ");
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
-        // Save configuration and initialize TicketPool
-        SystemConfig.saveConfig(config);
-        ticketPool = new TicketPool(new ArrayBlockingQueue<>(config.getTotalTickets()));
-        System.out.println("System configuration saved successfully.");
+        // Save configuration
+        SystemConfig.saveConfig(config);System.out.println("System configuration saved successfully.");
 
-
+        //Inititlize ticketpool
+        // Initialize TicketPool using the singleton pattern
+        try {
+            TicketPool ticketPool = TicketPool.getInstance(); // Get the singleton instance
+            ticketPool.initialize(config); // Initialize with the config
+            System.out.println("System configuration saved and TicketPool initialized successfully.");
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
 
