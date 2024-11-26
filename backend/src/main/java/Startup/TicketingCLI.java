@@ -15,7 +15,7 @@ public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
 
-    // Shared resources
+    // Shared resourcesz
     private TicketPool ticketPool;
     private List<Thread> producerThreads = new ArrayList<>();
     private List<Thread> consumerThreads = new ArrayList<>();

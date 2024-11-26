@@ -4,12 +4,22 @@ import Startup.SystemConfig;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TicketPool {
     private static TicketPool instance; // Singleton instance
     private BlockingQueue<Ticket> ticketQueue;
     private SystemConfig config;
     private boolean initialized = false;
+    ///////////////////////////////////////////////////////////////////////
+    //Attributrs to keep track of the tickets
+    private AtomicInteger ticketsProduced=new AtomicInteger(0);
+    private AtomicInteger ticketsConsumed=new AtomicInteger(0);
+    public int getTicketsProduced(){return ticketsProduced.get();}
+    public int getTicketsConsumed(){return ticketsConsumed.get();}
+    public void incrementTicketProduced(){ticketsProduced.incrementAndGet();}
+    public void incrementTicketsConsumed(){ticketsConsumed.incrementAndGet();}
+    ///////////////////////////////////////////////////////////////////////
 
     // Private constructor for Singleton pattern
     public TicketPool() {}
