@@ -27,20 +27,27 @@ public class ConsumerService implements Runnable {
     public void run() {
         try {
             while (running) {
-                // Retrieve a ticket from the pool
+                if (ticketPool.getTicketsConsumed() >= config.getTotalTickets()) {
+                    System.out.println("All tickets consumed. Stopping consumer: " + user.getUserID());
+                    stop();
+                    break;
+                }
+
+                // Retrieve and process ticket
                 Ticket ticket = ticketPool.retrieveTicket();
+                ticketPool.incrementTicketsConsumed();
 
-                // Log consumption
-                System.out.println("User " + user.getUserID() + " retrieved: " + ticket); // Fixed: Replaced `User.getUserID()` with `user.getUserID()`
+                System.out.println("User " + user.getUserID() + " retrieved ticket: " + ticket);
 
-                // Sleep for the global consumption rate duration
+                // Simulate user retrieval rate
                 Thread.sleep(1000 / config.getUserRetrievalRate());
             }
         } catch (InterruptedException e) {
+            System.out.println("Consumer thread interrupted.");
             Thread.currentThread().interrupt();
-            System.out.println("User " + user.getUserID() + " stopped."); // Fixed: Display user ID correctly
         }
     }
+
 
     // Stop the consumer
     public void stop() {
