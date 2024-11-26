@@ -1,89 +1,53 @@
-What is blocking que??
-https://medium.com/@reetesh043/blockingqueue-in-java-36ed1ee8e9f5#:~:text=BlockingQueue%20implementations%20are%20built%20to,removeAll%2C%20might%20not%20be%20atomic.
+Multithreading:
+Producers (Vendors):
 
-Great progress with the CLI setup for system-wide configuration! Let’s clarify the variables you’ve implemented and outline the next steps for integrating them with the rest of your ticketing system.
+Multiple vendors (Vendor 1, Vendor 2) are simultaneously adding tickets to the pool. Each vendor represents a separate thread acting as a producer.
+Consumers (Users):
 
-### Recap: System-Wide Configuration Variables
+Users (User 0) are retrieving tickets concurrently. Each user operates in its own thread as a consumer.
+Concurrency:
 
-Here’s a concise breakdown of each system-wide variable and its role in the multi-vendor ticketing platform:
+The interleaved logs of tickets being added and retrieved indicate concurrent execution of producer and consumer threads.
+Producer-Consumer Pattern:
+Shared Resource:
 
-1. **`totalTickets`**:
-   - Represents the total number of tickets any **vendor** can allocate for their event.
-   - This is a vendor-specific limit; each vendor can create up to `totalTickets` for a single event.
+The ticket pool acts as the shared resource (bounded buffer) between producers and consumers.
+Synchronization:
 
-2. **`maxTicketCapacity`**:
-   - Represents the **overall system limit** on the number of active tickets across all events and vendors in a session.
-   - Ensures that the system doesn’t exceed a maximum load, balancing ticket availability across vendors.
-   - The system will throttle new ticket releases from any vendor if this capacity is reached.
+The output indicates that producers stop when all tickets are produced, and consumers stop after all tickets are consumed. This suggests that there is proper synchronization using mechanisms such as:
+Locks/Mutexes to prevent race conditions.
+Conditions or semaphores to manage when producers or consumers should wait (e.g., when the pool is full/empty).
+Bounded Buffer:
 
-3. **`ticketReleaseRate`**:
-   - Defines how frequently each vendor’s tickets are released from a holding area to an available queue.
-   - This can be set per vendor event and is typically represented in a batch size or interval (e.g., releasing 10 tickets every second).
-   - Ensures that tickets become available for purchase gradually, not all at once.
+The pool has a maximum capacity (max ticket capacity: 5), and producers/vendors respect this bound.
+Rate Control:
 
-4. **`customerRetrievalRate`**:
-   - Determines how often customers are allowed to purchase tickets from an event queue.
-   - This can help regulate demand, preventing the system from getting overwhelmed by a surge of purchase requests.
+The rates (vendor release rate: 2 and customer retrieval rate: 2) indicate that the program may also regulate the speed of production and consumption.
+Evidence from the Logs:
+Producers Adding Tickets:
 
-With these configurations in mind, let’s outline the next steps.
+plaintext
+Copy code
+Vendor Vendor 1 added ticket: Ticket{ticketID=0, ...}
+Vendor Vendor 2 added ticket: Ticket{ticketID=0, ...}
+Producers are actively creating tickets.
 
----
+Consumers Retrieving Tickets:
 
-### Next Steps
+plaintext
+Copy code
+User 0 retrieved ticket: Ticket{ticketID=0, ...}
+Consumers are consuming tickets, sometimes back-to-back.
 
-1. **Initialize Ticket and Event Management System**
+Handling Limits:
 
-   - **Create Ticket and Event Classes**:
-     - Define classes for `Ticket`, `Event`, and `Vendor` to handle ticket information, vendor configurations, and event details.
-     - Each event should have attributes for `totalTickets`, `releaseRate`, and `currentAvailableTickets`.
-
-   - **Setup a Ticket Pool/Queue**:
-     - Implement a ticket pool or queue for each event, managing how tickets are released based on `ticketReleaseRate`.
-     - For simplicity, this can be a queue structure (like `ConcurrentLinkedQueue`) that manages tickets as they’re added and removed.
-
-2. **Implement Multi-Threaded Ticket Release and Purchase System**
-
-   - **Ticket Release Service**:
-     - Create a scheduled task that releases tickets into the event queue according to the `ticketReleaseRate` for each vendor.
-     - Ensure that this release respects `maxTicketCapacity` so that the system does not go over capacity.
-
-   - **Customer Retrieval Service**:
-     - Another task should allow customers to retrieve tickets based on the `customerRetrievalRate`.
-     - This ensures that ticket purchases align with the configured retrieval rate, maintaining system stability.
-
-3. **Concurrency Control**
-
-   - Use synchronization mechanisms to handle concurrent access to shared resources (ticket queues).
-   - Apply locks or synchronized blocks to ensure ticket count updates are thread-safe and to avoid overselling tickets.
-
-4. **Logging and Monitoring**
-
-   - Set up logging to monitor ticket release and purchase events in real time.
-   - Log any errors, throttling events, and user activities to understand system performance and troubleshoot issues.
-
-5. **REST API Integration with Spring Boot**
-
-   - **Expose Endpoints for Ticket Operations**:
-     - Build APIs to let vendors add events, view current ticket allocations, and monitor ticket release status.
-     - Create endpoints for customers to view available tickets and complete purchases.
-
-   - **Dashboard for System Monitoring**:
-     - Consider a simple dashboard or CLI-based monitoring view showing active events, tickets released, and purchases in real time.
-
----
-
-### Brief Example of the Flow
-
-1. **CLI Configuration**:
-   - System admin uses the CLI to set `maxTicketCapacity`, `totalTickets`, `ticketReleaseRate`, and `customerRetrievalRate`.
-
-2. **Vendor Event Setup**:
-   - Vendors create events, each with their `totalTickets` and `releaseRate`.
-
-3. **Ticket Release Scheduler**:
-   - Tickets are released gradually according to `ticketReleaseRate` while monitoring the overall `maxTicketCapacity`.
-
-4. **Customer Purchases**:
-   - Customers can retrieve tickets from the event queues as allowed by `customerRetrievalRate`, with VIP or prioritization rules if implemented.
-
-With these steps, you’ll have the foundation for a multi-threaded, real-time ticketing system capable of handling multiple vendors and customers. This should make it flexible and scalable, with system-wide configuration keeping everything in balance.
+Producers stopped after producing all tickets:
+plaintext
+Copy code
+Total tickets produced. Stopping producer: Vendor 1
+Consumers stopped after consuming all tickets:
+plaintext
+Copy code
+All tickets consumed. Stopping consumer: 0
+Conclusion:
+Your program indeed demonstrates multithreading and follows the producer-consumer pattern effectively. If you'd like, I can help verify or refine specific parts of your implementation, such as the synchronization mechanisms or thread management logic. Let me know!
