@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userID;
+    private String userID;
     @Column(name="Username")
     private String userUsername;
     @Column(name="Email",nullable = false,unique = true)
@@ -17,7 +17,7 @@ public class User {
     private String userPassword;
 
     //Constructor
-    public User(String userUsername){
+    public User(String userID){
         this.userID=userID;
         this.userUsername=userUsername;
         this.userEmail=userEmail;
@@ -27,14 +27,14 @@ public class User {
     public User() {}//for JPA
 
     //Getters
-    public int getUserID(){return userID;}
+    public String getUserID(){return userID;}
     public String getUserUsername(){return userUsername;}
     public String getUserEmail(){return userEmail;}
     public String getUserPassword(){return userPassword;}
 
     //Setters
 
-    public void setUserID(int userID){
+    public void setUserID(String userID){
         this.userID=userID;
     }
     public void setUserUsername(String userUsername){
