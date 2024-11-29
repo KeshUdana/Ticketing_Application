@@ -1,5 +1,5 @@
 package managment.backend.model;
-
+import java.util.Random;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -23,12 +23,14 @@ public class Ticket {
     public Ticket() {}
 
     // Parameterized constructor
-    public Ticket(double ticketID,double ticketPrice, String ticketType) {
+    public Ticket(double ticketID,double ticketPrice) {
         this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
-        this.ticketType = ticketType;
+        this.ticketType =ticketType;
         this.timeStamp = LocalDateTime.now(); // Automatically sets the current time
     }
+
+
 
     // Getters
     public double getTicketID() {
