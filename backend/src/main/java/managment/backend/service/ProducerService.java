@@ -38,12 +38,23 @@ public class ProducerService implements Runnable {
                     break;
                 }
 
-                // Generate and add ticket
+                // Generate a new ticket and set its properties using setters
                 Ticket ticket = new Ticket();
+                ticket.setTicketID(System.nanoTime());//Unique ID
+
+                ticket.setTicketType(10/Math.random()>0?"VIP":"Regular");
+                ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
+                ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
+
+                //Add the ticekt tot the pool and increment the count of produced ticekts
                 ticketPool.addTicket(ticket);
                 ticketPool.incrementTicketsProduced();
 
-                System.out.println("Vendor " + vendor.getVendorID() + " added ticket: " + ticket.getTicketID()+" "+ticket.getTicketPrice()+" "+ticket.getTicketType());
+                System.out.println("Vendor " +
+                        vendor.getVendorID() + " added ticket: "
+                        + ticket.getTicketID()+" "
+                        +ticket.getTicketPrice()+" "
+                        +ticket.getTicketType());
 
                 // Simulate vendor release rate
                 Thread.sleep(1000 / config.getVendorReleaseRate());

@@ -16,17 +16,17 @@ public class Ticket {
     private String ticketType; // Changed to private
 
     @Column(name = "Timestamp")
-    private LocalDateTime timeStamp; // Changed to private
+    private String timeStamp; // Changed to private
 
     // Default constructor (required by JPA)
-    public Ticket(long id, double price, String type, String timeStamp) {}
+    public Ticket() {}
 
     // Parameterized constructor
-    public Ticket(long ticketID,double ticketPrice,String ticketType,LocalDateTime timeStamp) {
+    public Ticket(long ticketID,double ticketPrice,String ticketType,String timeStamp) {
         this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
         this.ticketType =ticketType;
-        this.timeStamp = LocalDateTime.now(); // Automatically sets the current time
+        this.timeStamp = timeStamp; // Automatically sets the current time
     }
 
 
@@ -43,7 +43,7 @@ public class Ticket {
     public String getTicketType() {
         return ticketType;
     }
-    public LocalDateTime getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
@@ -57,7 +57,7 @@ public class Ticket {
     public void setTicketType(String ticketType){
         this.ticketType=ticketType;
     }
-    public void setTimeStamp(LocalDateTime timeStamp){
+    public void setTimeStamp(String timeStamp){
         this.timeStamp=timeStamp;
     }
 
