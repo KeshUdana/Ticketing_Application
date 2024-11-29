@@ -1,5 +1,4 @@
 package managment.backend.model;
-import java.util.Random;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private double ticketID=Math.random(); // Changed to private (encapsulation best practice)
+    private long ticketID; // Changed to private (encapsulation best practice)
 
     @Column(name = "Price")
     private double ticketPrice; // Changed to private
@@ -20,10 +19,10 @@ public class Ticket {
     private LocalDateTime timeStamp; // Changed to private
 
     // Default constructor (required by JPA)
-    public Ticket() {}
+    public Ticket(long id, double price, String type, String timeStamp) {}
 
     // Parameterized constructor
-    public Ticket(double ticketID,double ticketPrice) {
+    public Ticket(long ticketID,double ticketPrice,String ticketType,LocalDateTime timeStamp) {
         this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
         this.ticketType =ticketType;
@@ -44,10 +43,24 @@ public class Ticket {
     public String getTicketType() {
         return ticketType;
     }
-
     public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
+
+    //Setters
+    public void setTicketID(Long ticketID){
+        this.ticketID=ticketID;
+    }
+    public void setTicketPrice(double price){
+        this.ticketPrice=ticketPrice;
+    }
+    public void setTicketType(String ticketType){
+        this.ticketType=ticketType;
+    }
+    public void setTimeStamp(LocalDateTime timeStamp){
+        this.timeStamp=timeStamp;
+    }
+
 
     // Overriding toString for easy logging
     @Override

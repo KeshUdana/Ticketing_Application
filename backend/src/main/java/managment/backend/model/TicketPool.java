@@ -62,6 +62,7 @@ public class TicketPool {
         System.out.println("TicketPool initialized with capacity: " + config.getTotalTickets());
     }
 
+
     // Add a ticket to the pool
     public void addTicket(Ticket ticket) throws InterruptedException {
         if (!initialized) {
