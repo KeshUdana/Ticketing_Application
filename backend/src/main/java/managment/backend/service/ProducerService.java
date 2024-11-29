@@ -42,7 +42,7 @@ public class ProducerService implements Runnable {
                 Ticket ticket = new Ticket();
                 ticket.setTicketID(System.nanoTime());//Unique ID
 
-                ticket.setTicketType(10/Math.random()>0?"VIP":"Regular");
+                ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
@@ -52,8 +52,8 @@ public class ProducerService implements Runnable {
 
                 System.out.println("Vendor " +
                         vendor.getVendorID() + " added ticket: "
-                        + ticket.getTicketID()+" "
-                        +ticket.getTicketPrice()+" "
+                        + ticket.getTicketID()+", "
+                        +ticket.getTicketPrice()+", "
                         +ticket.getTicketType());
 
                 // Simulate vendor release rate
