@@ -37,7 +37,7 @@ public class ConsumerService implements Runnable {
                 Ticket ticket = ticketPool.retrieveTicket();
                 ticketPool.incrementTicketsConsumed();
 
-                System.out.println("User " + user.getUserID() + " retrieved ticket: " + ticket);
+                System.out.println("User " + user.getUserID() + " retrieved ticket: " + ticket.getTicketID()+" "+ticket.getTicketPrice());
 
                 // Simulate user retrieval rate
                 Thread.sleep(1000 / config.getUserRetrievalRate());

@@ -131,8 +131,6 @@ public class TicketingCLI {
         SystemConfig config = SystemConfig.loadConfig();
         int totalTickets = config.getTotalTickets();
         int maxCapacity = config.getMaxTicketCapacity();
-        int vendorReleaseRate = config.getVendorReleaseRate();
-        int userRetrievalRate = config.getUserRetrievalRate();
 
         int numProducerThreads = totalTickets / maxCapacity + (totalTickets % maxCapacity > 0 ? 1 : 0);
 

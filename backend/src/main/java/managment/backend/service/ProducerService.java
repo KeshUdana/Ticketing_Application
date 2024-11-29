@@ -43,7 +43,7 @@ public class ProducerService implements Runnable {
                 ticketPool.addTicket(ticket);
                 ticketPool.incrementTicketProduced();
 
-                System.out.println("Vendor " + vendor.getVendorID() + " added ticket: " + ticket);
+                System.out.println("Vendor " + vendor.getVendorID() + " added ticket: " + ticket.getTicketID()+" "+ticket.getTicketPrice());
 
                 // Simulate vendor release rate
                 Thread.sleep(1000 / config.getVendorReleaseRate());
