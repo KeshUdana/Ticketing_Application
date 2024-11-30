@@ -3,6 +3,7 @@ package managment.backend.service;
 import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
+import managment.backend.model.User;
 import managment.backend.model.Vendor;
 import managment.backend.persistence.TicketSales;
 import managment.backend.repository.ticketSaleRepository;
@@ -54,7 +55,7 @@ public class ProducerService implements Runnable {
                 TicketSales sale=new TicketSales();
                 sale.setTicket(ticket);
                 sale.setVendor(vendor);
-                sale.setUser(user);
+                sale.setUser(User.getUserID());
                 sale.setTransactionTime(LocalDateTime.now());
                 sale.setTicketPrice(ticket.getTicketPrice());
                 sale.setTicketType(ticket.getTicketType());

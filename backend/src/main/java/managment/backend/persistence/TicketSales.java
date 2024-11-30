@@ -106,4 +106,7 @@ public class TicketSales {
     public void setTicketType(String ticketType) {
         this.ticketType = ticketType;
     }
+
+    public void setUser(String userID) {
+    }
 }
