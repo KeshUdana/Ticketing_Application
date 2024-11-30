@@ -4,6 +4,10 @@ import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
 import managment.backend.model.Vendor;
+import managment.backend.persistence.TicketSales;
+import managment.backend.repository.ticketSaleRepository;
+
+import java.time.LocalDateTime;
 
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
@@ -45,6 +49,18 @@ public class ProducerService implements Runnable {
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
+
+                //Create the transaction and save to the DB
+                TicketSales sale=new TicketSales();
+                sale.setTicket(ticket);
+                sale.setVendor(vendor);
+                sale.setUser(user);
+                sale.setTransactionTime(LocalDateTime.now());
+                sale.setTicketPrice(ticket.getTicketPrice());
+                sale.setTicketType(ticket.getTicketType());
+
+                //Save the transaction to the database
+                ticketSaleRepository.save(sale);
 
                 //Add the ticekt tot the pool and increment the count of produced ticekts
                 ticketPool.addTicket(ticket);
