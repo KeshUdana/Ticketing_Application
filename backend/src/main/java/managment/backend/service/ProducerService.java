@@ -55,7 +55,6 @@ public class ProducerService implements Runnable {
                 TicketSales sale=new TicketSales();
                 sale.setTicket(ticket);
                 sale.setVendor(vendor);
-                sale.setUser(User.getUserID());
                 sale.setTransactionTime(LocalDateTime.now());
                 sale.setTicketPrice(ticket.getTicketPrice());
                 sale.setTicketType(ticket.getTicketType());

@@ -27,7 +27,7 @@ public class User {
     public User() {}//for JPA
 
     //Getters
-    public static String getUserID(){return userID;}
+    public  String getUserID(){return userID;}
     public String getUserUsername(){return userUsername;}
     public String getUserEmail(){return userEmail;}
     public String getUserPassword(){return userPassword;}
