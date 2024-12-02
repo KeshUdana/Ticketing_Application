@@ -147,7 +147,7 @@ public class TicketingCLI {
             producerThreads.add(producerThread);
             producerThread.start();
         }
-
+//uuu//
         // Start consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
             ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
