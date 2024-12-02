@@ -1,6 +1,7 @@
 package Startup;
 
 import managment.backend.model.TicketPool;
+import managment.backend.repository.ticketSaleRepository;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
 import managment.backend.model.User;
@@ -14,14 +15,18 @@ import java.util.Scanner;
 public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
+    private ProducerService producerService;
+    private ConsumerService consumerService;
+    private TicketPool ticketPool;
 
     // Shared resourcesz
-    private managment.backend.model.TicketPool ticketPool;
+   // private managment.backend.model.TicketPool ticketPool;
     private List<Thread> producerThreads = new ArrayList<>();
     private List<Thread> consumerThreads = new ArrayList<>();
 
 
     private static final String CONFIG_FILE = "config.json";
+    private managment.backend.repository.ticketSaleRepository ticketSaleRepository;
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
@@ -134,16 +139,20 @@ public class TicketingCLI {
 
         int numProducerThreads = totalTickets / maxCapacity + (totalTickets % maxCapacity > 0 ? 1 : 0);
 
-        // Start producer threads
+        // Start producer threads and consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread producerThread = new Thread(new ProducerService(ticketPool, new Vendor("Vendor " + (i + 1)),config));
+            ProducerService producerService=new ProducerService(ticketPool,config,ticketSaleRepository);
+            Vendor vendor=producerService.getVendor();
+            Thread producerThread=new Thread(producerService);
             producerThreads.add(producerThread);
             producerThread.start();
         }
 
         // Start consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
-            Thread consumerThread = new Thread(new ConsumerService(ticketPool, new User("Consumer " + (i + 1)), config));
+            ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
+            User user=consumerService.getUser();
+            Thread consumerThread=new Thread(consumerService);
             consumerThreads.add(consumerThread);
             consumerThread.start();
         }

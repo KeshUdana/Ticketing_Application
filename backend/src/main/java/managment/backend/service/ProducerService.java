@@ -97,7 +97,7 @@ public class ProducerService implements Runnable {
         }
     }// Getter for user info to log in TicketingCLI
     public Vendor getVendor() {
-        return vendor;
+        return this.vendor;
     }
 
 

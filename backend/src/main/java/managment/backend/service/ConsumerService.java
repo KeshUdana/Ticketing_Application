@@ -22,7 +22,7 @@ public class ConsumerService implements Runnable {
 
     // Constructor
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public ConsumerService(TicketPool ticketPool, User user,SystemConfig config,ticketSaleRepository ticketSaleRepository) {
+    public ConsumerService(TicketPool ticketPool, SystemConfig config, ticketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }
@@ -74,6 +74,6 @@ public class ConsumerService implements Runnable {
     }
     // Getter for user info to log in TicketingCLI
     public User getUser() {
-        return user;
+        return this.user;
     }
 }
