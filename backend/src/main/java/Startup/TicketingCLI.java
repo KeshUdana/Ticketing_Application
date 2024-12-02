@@ -1,7 +1,7 @@
 package Startup;
 
 import managment.backend.model.TicketPool;
-import managment.backend.repository.ticketSaleRepository;
+import managment.backend.repository.TicketSaleRepository;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
 import managment.backend.model.User;
@@ -26,7 +26,7 @@ public class TicketingCLI {
 
 
     private static final String CONFIG_FILE = "config.json";
-    private managment.backend.repository.ticketSaleRepository ticketSaleRepository;
+    private TicketSaleRepository ticketSaleRepository;
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();

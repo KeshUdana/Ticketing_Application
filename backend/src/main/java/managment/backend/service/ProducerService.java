@@ -3,10 +3,11 @@ package managment.backend.service;
 import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
-import managment.backend.model.User;
+
 import managment.backend.model.Vendor;
 import managment.backend.persistence.TicketSales;
-import managment.backend.repository.ticketSaleRepository;
+import managment.backend.repository.TicketSaleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,11 +19,12 @@ public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
     private final SystemConfig config;
-    private final ticketSaleRepository ticketSaleRepository;
+
+    private TicketSaleRepository ticketSaleRepository;
     private boolean systemRunning; // Flag to control when to stop the producer
 
-
-    public ProducerService(TicketPool ticketPool,  SystemConfig config,ticketSaleRepository ticketSaleRepository) {
+@Autowired
+    public ProducerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }
@@ -56,7 +58,7 @@ public class ProducerService implements Runnable {
 
                 // Generate a new ticket and set its properties using setters
                 Ticket ticket = new Ticket();
-                ticket.setTicketID(Long.valueOf(UUID.randomUUID().toString()));//Unique ID
+                ticket.setTicketID(UUID.randomUUID().toString());//Unique ID
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());

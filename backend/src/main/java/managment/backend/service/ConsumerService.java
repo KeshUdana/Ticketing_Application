@@ -3,7 +3,7 @@ package managment.backend.service;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
 import managment.backend.model.User;
-import managment.backend.repository.ticketSaleRepository;
+import managment.backend.repository.TicketSaleRepository;
 import Startup.SystemConfig;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +14,16 @@ public class ConsumerService implements Runnable {
 
     private final TicketPool ticketPool;
     private final User user;
+    private final TicketSaleRepository ticketSaleRepository;
 
     //  private final int userRetrievalRate;
     public SystemConfig config;
     private boolean systemRunning;
-    private final ticketSaleRepository ticketSaleRepository;
+
 
     // Constructor
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public ConsumerService(TicketPool ticketPool, SystemConfig config, ticketSaleRepository ticketSaleRepository) {
+    public ConsumerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ticketID; // Changed to private (encapsulation best practice)
+    private String ticketID; // Changed to private (encapsulation best practice)
 
     @Column(name = "Price")
     private double ticketPrice; // Changed to private
@@ -22,7 +22,7 @@ public class Ticket {
     public Ticket() {}
 
     // Parameterized constructor
-    public Ticket(long ticketID,double ticketPrice,String ticketType,String timeStamp) {
+    public Ticket(String ticketID,double ticketPrice,String ticketType,String timeStamp) {
         this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
         this.ticketType =ticketType;
@@ -32,7 +32,7 @@ public class Ticket {
 
 
     // Getters
-    public double getTicketID() {
+    public String getTicketID() {
         return ticketID;
     }
 
@@ -48,7 +48,7 @@ public class Ticket {
     }
 
     //Setters
-    public void setTicketID(Long ticketID){
+    public void setTicketID(String ticketID){
         this.ticketID=ticketID;
     }
     public void setTicketPrice(double price){
