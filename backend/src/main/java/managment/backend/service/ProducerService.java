@@ -7,24 +7,29 @@ import managment.backend.model.User;
 import managment.backend.model.Vendor;
 import managment.backend.persistence.TicketSales;
 import managment.backend.repository.ticketSaleRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@SuppressWarnings("ALL")
+@Service
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
     private final SystemConfig config;
+    private final ticketSaleRepository ticketSaleRepository;
     //private final int vendorReleaseRate;  Vendor release rate extracted from config
 
     private boolean systemRunning; // Flag to control when to stop the producer
 
-    public ProducerService(TicketPool ticketPool, Vendor vendor, SystemConfig config) {
+    public ProducerService(TicketPool ticketPool, Vendor vendor, SystemConfig config,ticketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }
         this.ticketPool = ticketPool;
         this.vendor = vendor;
         this.config=config;
+        this.ticketSaleRepository=ticketSaleRepository;
         this.systemRunning = true; // Start with the producer running
     }
 
@@ -55,12 +60,14 @@ public class ProducerService implements Runnable {
                 TicketSales sale=new TicketSales();
                 sale.setTicket(ticket);
                 sale.setVendor(vendor);
+                sale.setUser(user);
                 sale.setTransactionTime(LocalDateTime.now());
                 sale.setTicketPrice(ticket.getTicketPrice());
                 sale.setTicketType(ticket.getTicketType());
 
                 //Save the transaction to the database
                 ticketSaleRepository.save(sale);
+                System.out.println("Transaction saved for Ticket ID: " + ticket.getTicketID());
 
                 //Add the ticekt tot the pool and increment the count of produced ticekts
                 ticketPool.addTicket(ticket);
