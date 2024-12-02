@@ -10,6 +10,7 @@ import managment.backend.repository.ticketSaleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @SuppressWarnings("ALL")
 @Service
@@ -21,15 +22,21 @@ public class ProducerService implements Runnable {
     private boolean systemRunning; // Flag to control when to stop the producer
 
 
-    public ProducerService(TicketPool ticketPool, Vendor vendor, SystemConfig config,ticketSaleRepository ticketSaleRepository) {
+    public ProducerService(TicketPool ticketPool,  SystemConfig config,ticketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
         }
         this.ticketPool = ticketPool;
-        this.vendor = vendor;
         this.config=config;
         this.ticketSaleRepository=ticketSaleRepository;
         this.systemRunning = true; // Start with the producer running
+
+        //Initialize vendor details
+        this.vendor=new Vendor();
+        vendor.setVendorID(UUID.randomUUID().toString());
+        vendor.setVendorUsername("Vendor-name");
+        vendor.setVendorEmail("vendor@gmail.com");
+        vendor.setVendorPassword(UUID.randomUUID().toString());
     }
 
     // Method to stop the producer
@@ -49,20 +56,20 @@ public class ProducerService implements Runnable {
 
                 // Generate a new ticket and set its properties using setters
                 Ticket ticket = new Ticket();
-                ticket.setTicketID(System.nanoTime());//Unique ID
-
+                ticket.setTicketID(Long.valueOf(UUID.randomUUID().toString()));//Unique ID
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
+/*
                 // Assign user to the ticket
                 this.user = new User("User" + (ticketPool.getTicketsProduced() + 1));
-
+*/
                 //Create the transaction and save to the DB
                 TicketSales sale=new TicketSales();
                 sale.setTicket(ticket);
                 sale.setVendor(vendor);
-                sale.setUser(user);
+
                 sale.setTransactionTime(LocalDateTime.now());
                 sale.setTicketPrice(ticket.getTicketPrice());
                 sale.setTicketType(ticket.getTicketType());
@@ -88,6 +95,10 @@ public class ProducerService implements Runnable {
             System.out.println("Producer thread interrupted.");
             Thread.currentThread().interrupt();
         }
+    }// Getter for user info to log in TicketingCLI
+    public Vendor getVendor() {
+        return vendor;
     }
+
 
 }
