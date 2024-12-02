@@ -16,11 +16,13 @@ import java.time.LocalDateTime;
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
+    private User user;
     private final SystemConfig config;
     private final ticketSaleRepository ticketSaleRepository;
     //private final int vendorReleaseRate;  Vendor release rate extracted from config
 
     private boolean systemRunning; // Flag to control when to stop the producer
+
 
     public ProducerService(TicketPool ticketPool, Vendor vendor, SystemConfig config,ticketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
