@@ -16,11 +16,8 @@ import java.time.LocalDateTime;
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
-    private User user;
     private final SystemConfig config;
     private final ticketSaleRepository ticketSaleRepository;
-    //private final int vendorReleaseRate;  Vendor release rate extracted from config
-
     private boolean systemRunning; // Flag to control when to stop the producer
 
 
@@ -57,6 +54,9 @@ public class ProducerService implements Runnable {
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
+
+                // Assign user to the ticket
+                this.user = new User("User" + (ticketPool.getTicketsProduced() + 1));
 
                 //Create the transaction and save to the DB
                 TicketSales sale=new TicketSales();
