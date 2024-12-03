@@ -5,6 +5,7 @@ import managment.backend.model.Ticket;
 import managment.backend.model.User;
 import managment.backend.model.Vendor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -91,7 +92,7 @@ public class TicketSales {
         this.transactionTime = transactionTime;
     }
 
-    public Double getTicketPrice() {
+    public double getTicketPrice() {
         return ticketPrice;
     }
 
