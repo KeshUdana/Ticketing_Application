@@ -1,31 +1,39 @@
+package managment.backend.repository;
 import managment.backend.persistence.TicketSales;
-import managment.backend.repository.TicketSaleRepository;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcTicketSaleRepository implements TicketSaleRepository {
+public abstract class JdbcTicketSaleRepository implements TicketSaleRepository {
 
     private final String url = "jdbc:postgresql://localhost:5432/your_database";
     private final String user = "your_username";
     private final String password = "your_password";
 
     @Override
-    public void save(TicketSales ticketSales) {
+    public TicketSales save(TicketSales ticketSales) {
         String sql = "INSERT INTO ticket_sales (ticket_id, user_id, vendor_id, transaction_time, ticket_price, ticket_type) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ticketSales.getTicket().getTicketID());
             stmt.setString(2, ticketSales.getUser().getUserID());
             stmt.setString(3, ticketSales.getVendor().getVendorID());
             stmt.setTimestamp(4, Timestamp.valueOf(ticketSales.getTransactionTime()));
             stmt.setDouble(5, ticketSales.getTicketPrice());
             stmt.setString(6, ticketSales.getTicketType());
-            stmt.executeUpdate();
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        ticketSales.setSalesID(generatedKeys.getLong(1));  // Assuming salesID is auto-generated
+                    }
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return ticketSales;  // Return the saved TicketSales object
     }
 
     @Override

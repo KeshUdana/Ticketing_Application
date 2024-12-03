@@ -4,6 +4,7 @@ import Startup.SystemConfig;
 import managment.backend.model.Ticket;
 import managment.backend.model.TicketPool;
 
+import managment.backend.model.User;
 import managment.backend.model.Vendor;
 import managment.backend.persistence.TicketSales;
 import managment.backend.repository.TicketSaleRepository;
@@ -19,11 +20,12 @@ public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
     private final Vendor vendor;
     private final SystemConfig config;
-
+    @Autowired
     private TicketSaleRepository ticketSaleRepository;
     private boolean systemRunning; // Flag to control when to stop the producer
+    private User user;
 
-@Autowired
+    @Autowired
     public ProducerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");
@@ -64,9 +66,7 @@ public class ProducerService implements Runnable {
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
 /*
-                // Assign user to the ticket
-                this.user = new User("User" + (ticketPool.getTicketsProduced() + 1));
-*/
+
                 //Create the transaction and save to the DB
                 TicketSales sale=new TicketSales();
                 sale.setTicket(ticket);
@@ -76,6 +76,9 @@ public class ProducerService implements Runnable {
                 sale.setTicketPrice(ticket.getTicketPrice());
                 sale.setTicketType(ticket.getTicketType());
 
+ */
+                //Using gnerateTicektSale mthod instead as encapsualtion
+                TicketSales sale=generateTicketSale(ticket,vendor,user);
                 //Save the transaction to the database
                 ticketSaleRepository.save(sale);
                 System.out.println("Transaction saved for Ticket ID: " + ticket.getTicketID());
@@ -97,7 +100,20 @@ public class ProducerService implements Runnable {
             System.out.println("Producer thread interrupted.");
             Thread.currentThread().interrupt();
         }
+
     }// Getter for user info to log in TicketingCLI
+
+    private TicketSales generateTicketSale(Ticket ticket, Vendor vendor, User user){
+    TicketSales sale=new TicketSales();
+    sale.setTicket(ticket);
+    sale.setVendor(vendor);
+    sale.setTransactionTime(LocalDateTime.now());
+    sale.setTicketPrice(ticket.getTicketPrice());
+    sale.setTicketType(ticket.getTicketType());
+    return sale;
+    }
+
+
     public Vendor getVendor() {
         return this.vendor;
     }
