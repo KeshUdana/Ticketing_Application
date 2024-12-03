@@ -17,7 +17,7 @@ public class TicketSaleRepository {
     }
 
     public void save(TicketSales ticketSales) {
-        String query = "INSERT INTO ticket_sales (ticket_id, ticket_type,ticket_price, transaction_time, vendor, user) VALUES (?, ?, ?, ?, ?,?)";
+        String query = "INSERT INTO ticket_sales (ticket_id, ticket_type,ticket_price, transaction_time, vendor, consumer) VALUES (?, ?, ?, ?, ?,?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1,ticketSales.getTicket().getTicketID());
             statement.setString(2, ticketSales.getTicketType());
