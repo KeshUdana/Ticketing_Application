@@ -17,13 +17,13 @@ public class TicketSaleRepository {
     }
 
     public void save(TicketSales ticketSales) {
-        String query = "INSERT INTO ticket_sales (ticket_id, ticket_type,ticket_price, transaction_time, vendor, consumer) VALUES (?, ?, ?, ?, ?,?)";
+        String query = "INSERT INTO ticket_sales (ticket_id,vendor_id,transaction_time,ticket_price,ticket_type,user_id) VALUES (?, ?, ?, ?, ?,?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1,ticketSales.getTicket().getTicketID());
-            statement.setString(2, ticketSales.getTicketType());
-            statement.setDouble(3, ticketSales.getTicketPrice());
-            statement.setTimestamp(4, Timestamp.valueOf(ticketSales.getTransactionTime()));
-            statement.setString(5, ticketSales.getVendor().getVendorID());
+            statement.setString(2, ticketSales.getVendor().getVendorID());
+            statement.setTimestamp(3, Timestamp.valueOf(ticketSales.getTransactionTime()));
+            statement.setDouble(4, ticketSales.getTicketPrice());
+            statement.setString(5, ticketSales.getTicketType());
             statement.setString(6,ticketSales.getUser().getUserID());
 
 
