@@ -4,6 +4,7 @@ import managment.backend.persistence.DatabaseConnection;
 import managment.backend.persistence.TicketSales;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class TicketSaleRepository {
     private Connection connection;
@@ -19,7 +20,7 @@ public class TicketSaleRepository {
     public void save(TicketSales ticketSales) {
         String query = "INSERT INTO ticket_sales (ticket_id,vendor_id,transaction_time,ticket_price,ticket_type,user_id) VALUES (?, ?, ?, ?, ?,?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1,ticketSales.getTicket().getTicketID());
+            statement.setObject(1, UUID.fromString(ticketSales.getTicket().getTicketID()));
             statement.setString(2, ticketSales.getVendor().getVendorID());
             statement.setTimestamp(3, Timestamp.valueOf(ticketSales.getTransactionTime()));
             statement.setDouble(4, ticketSales.getTicketPrice());
