@@ -37,7 +37,7 @@ public class ProducerService implements Runnable {
 
         //Initialize vendor details
         this.vendor=new Vendor();
-        vendor.setVendorID(UUID.randomUUID().toString());
+        vendor.setVendorID(UUID.randomUUID().toString().substring(0,5));
         vendor.setVendorUsername("Vendor-name");
         vendor.setVendorEmail("vendor@gmail.com");
         vendor.setVendorPassword(UUID.randomUUID().toString());
@@ -58,6 +58,13 @@ public class ProducerService implements Runnable {
                     break;
                 }
 
+                //Generate a new user for the transaction
+                User user=new User();
+                user.setUserID(UUID.randomUUID().toString().substring(0,5));
+                user.setUserUsername("USER-name");
+                user.setUserEmail("user@gmail.com");
+                user.setUserPassword(UUID.randomUUID().toString());
+
                 // Generate a new ticket and set its properties using setters
                 Ticket ticket = new Ticket();
                 ticket.setTicketID(UUID.randomUUID().toString().substring(0,5));//Unique UUI with just 5 characters
@@ -65,12 +72,7 @@ public class ProducerService implements Runnable {
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
-                //Generate a new user for the transaction
-                User user=new User();
-                user.setUserID(UUID.randomUUID().toString().substring(0,5));
-                user.setUserUsername("USER-name");
-                user.setUserEmail("user@gmail.com");
-                user.setUserPassword(UUID.randomUUID().toString());
+
 
                 //Using gnerateTicektSale mthod instead as encapsualtion
                 TicketSales sale=generateTicketSale(ticket,vendor,user);

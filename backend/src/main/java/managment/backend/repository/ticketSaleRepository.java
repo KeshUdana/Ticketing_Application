@@ -17,7 +17,7 @@ public class TicketSaleRepository {
     }
 
     public void save(TicketSales ticketSales) {
-        String query = "INSERT INTO ticket_sales (ticket_id, vendor_id, transaction_time, ticket_price, ticket_type) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO ticket_sales (ticket_id, ticket_type,ticket_price, transaction_time, vendor, user) VALUES (?, ?, ?, ?, ?,?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1,ticketSales.getTicket().getTicketID());
             statement.setString(2, ticketSales.getTicketType());
@@ -34,6 +34,7 @@ public class TicketSaleRepository {
                 System.out.println("TicketSale saved to database.");
             }
         } catch (SQLException e) {
+            System.err.println("Error saving TicketSale: " + e.getMessage());
             e.printStackTrace();
         }
     }

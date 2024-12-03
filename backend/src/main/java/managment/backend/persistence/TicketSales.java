@@ -37,13 +37,17 @@ public class TicketSales {
     private String ticketType;
 
     // Constructor with all fields
-    public TicketSales(Ticket ticket, User user, Vendor vendor, LocalDateTime transactionTime, Double ticketPrice, String ticketType) {
+    public TicketSales(Ticket ticket,String ticketType,Double ticketPrice, LocalDateTime transactionTime,Vendor vendor ,User user ) {
         this.ticket = ticket;
-        this.user = user;
-        this.vendor = vendor;
-        this.transactionTime = transactionTime;
-        this.ticketPrice = ticketPrice;
         this.ticketType = ticketType;
+        this.ticketPrice = ticketPrice;
+        this.transactionTime = transactionTime;
+        this.vendor = vendor;
+        this.user = user;
+
+
+
+
     }
 
     // Default constructor
