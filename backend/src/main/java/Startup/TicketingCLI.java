@@ -4,8 +4,7 @@ import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
-import managment.backend.model.User;
-import managment.backend.model.Vendor;
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,8 +14,9 @@ import java.util.Scanner;
 public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
+    /*
     private ProducerService producerService;
-    private ConsumerService consumerService;
+    private ConsumerService consumerService;*/
     private TicketPool ticketPool;
 
     // Shared resourcesz
@@ -92,7 +92,7 @@ public class TicketingCLI {
         try {
             this.ticketPool = TicketPool.getInstance();
             ticketPool.initialize(config);
-            System.out.println("TicketPool initialized successfully.");
+            System.out.println(" ");
         } catch (IllegalStateException | IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }

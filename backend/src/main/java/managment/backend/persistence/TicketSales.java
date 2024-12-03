@@ -5,7 +5,7 @@ import managment.backend.model.Ticket;
 import managment.backend.model.User;
 import managment.backend.model.Vendor;
 
-import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -52,13 +52,6 @@ public class TicketSales {
     }
 
     // Getters and setters
-    public Long getSalesID() {
-        return salesID;
-    }
-
-    public void setSalesID(Long salesID) {
-        this.salesID = salesID;
-    }
 
     public Ticket getTicket() {
         return ticket;
@@ -108,6 +101,4 @@ public class TicketSales {
         this.ticketType = ticketType;
     }
 
-    public void setUser(String userID) {
-    }
 }

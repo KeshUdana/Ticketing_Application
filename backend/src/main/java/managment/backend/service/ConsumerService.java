@@ -33,12 +33,12 @@ public class ConsumerService implements Runnable {
         this.systemRunning = true; // Start with the producer running
 
 
-    //Initliaze Consumer details
+   /* //Initliaze Consumer details
     this.user=new User();
-    user.setUserID(UUID.randomUUID().toString());
+    user.setUserID(UUID.randomUUID().toString().substring(0,5));
     user.setUserUsername("USER-name");
     user.setUserEmail("user@gmail.com");
-    user.setUserPassword(UUID.randomUUID().toString());
+    user.setUserPassword(UUID.randomUUID().toString());*/
 }
 
     @Override

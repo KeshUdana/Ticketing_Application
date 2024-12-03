@@ -60,23 +60,18 @@ public class ProducerService implements Runnable {
 
                 // Generate a new ticket and set its properties using setters
                 Ticket ticket = new Ticket();
-                ticket.setTicketID(UUID.randomUUID().toString());//Unique ID
+                ticket.setTicketID(UUID.randomUUID().toString().substring(0,5));//Unique UUI with just 5 characters
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
-/*
+                //Generate a new user for the transaction
+                User user=new User();
+                user.setUserID(UUID.randomUUID().toString().substring(0,5));
+                user.setUserUsername("USER-name");
+                user.setUserEmail("user@gmail.com");
+                user.setUserPassword(UUID.randomUUID().toString());
 
-                //Create the transaction and save to the DB
-                TicketSales sale=new TicketSales();
-                sale.setTicket(ticket);
-                sale.setVendor(vendor);
-
-                sale.setTransactionTime(LocalDateTime.now());
-                sale.setTicketPrice(ticket.getTicketPrice());
-                sale.setTicketType(ticket.getTicketType());
-
- */
                 //Using gnerateTicektSale mthod instead as encapsualtion
                 TicketSales sale=generateTicketSale(ticket,vendor,user);
                 //Save the transaction to the database
@@ -107,6 +102,7 @@ public class ProducerService implements Runnable {
     TicketSales sale=new TicketSales();
     sale.setTicket(ticket);
     sale.setVendor(vendor);
+    sale.setUser(user);
     sale.setTransactionTime(LocalDateTime.now());
     sale.setTicketPrice(ticket.getTicketPrice());
     sale.setTicketType(ticket.getTicketType());
@@ -120,3 +116,15 @@ public class ProducerService implements Runnable {
 
 
 }
+/*
+
+                //Create the transaction and save to the DB
+                TicketSales sale=new TicketSales();
+                sale.setTicket(ticket);
+                sale.setVendor(vendor);
+
+                sale.setTransactionTime(LocalDateTime.now());
+                sale.setTicketPrice(ticket.getTicketPrice());
+                sale.setTicketType(ticket.getTicketType());
+
+ */
