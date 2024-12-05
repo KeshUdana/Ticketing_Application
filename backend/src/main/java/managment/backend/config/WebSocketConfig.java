@@ -1,4 +1,4 @@
-package managment.backend.controller;
+package managment.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -12,12 +12,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // Enables a simple in-memory broker
-        config.setApplicationDestinationPrefixes("/app"); // Prefix for messages bound for methods
+        // Enables a simple message broker for /topic
+        config.enableSimpleBroker("/topic");
+        // Defines application destination prefix for messages
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS(); // Enable SockJS fallback
+        // Registers an endpoint for WebSocket communication
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
     }
 }
