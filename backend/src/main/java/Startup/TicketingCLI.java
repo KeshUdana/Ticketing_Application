@@ -148,7 +148,10 @@ public class TicketingCLI {
             Thread producerThread=new Thread(producerService);
             producerThreads.add(producerThread);
             producerThread.start();
+
+
         }
+
 
         // Start consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
