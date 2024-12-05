@@ -1,12 +1,19 @@
 package Startup;
 
+import lombok.extern.java.Log;
+import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,19 +21,20 @@ import java.util.Scanner;
 public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
-    /*
-    private ProducerService producerService;
-    private ConsumerService consumerService;*/
     private TicketPool ticketPool;
 
-    // Shared resourcesz
-   // private managment.backend.model.TicketPool ticketPool;
+    // Shared resources
+
     private List<Thread> producerThreads = new ArrayList<>();
     private List<Thread> consumerThreads = new ArrayList<>();
 
-
+    //Attributes needed for front end
+    private static final String JSON_LOG_FILE="thread_visualize.json";
+    private final List<LogEntry>logs=new ArrayList<>();
+    private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
     private static final String CONFIG_FILE = "config.json";
     private TicketSaleRepository ticketSaleRepository;
+
 
     public static void main(String[] args) {
         TicketingCLI cli = new TicketingCLI();
@@ -138,7 +146,7 @@ public class TicketingCLI {
         int maxCapacity = config.getMaxTicketCapacity();
         int numProducerThreads = totalTickets / maxCapacity + (totalTickets % maxCapacity > 0 ? 1 : 0);
 
-        //Initiliaze Ticketing Repository before threads start
+        //Initialize Ticketing Repository before threads start
         TicketSaleRepository ticketSaleRepository = new TicketSaleRepository();
 
         // Start producer threads and consumer threads
@@ -148,11 +156,10 @@ public class TicketingCLI {
             Thread producerThread=new Thread(producerService);
             producerThreads.add(producerThread);
             producerThread.start();
+            logThreadEvent("Producer ",producerThread.getId()," Started");
 
 
         }
-
-
         // Start consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
             ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
@@ -160,10 +167,20 @@ public class TicketingCLI {
             Thread consumerThread=new Thread(consumerService);
             consumerThreads.add(consumerThread);
             consumerThread.start();
-
+            logThreadEvent("Consumer ",consumerThread.getId()," Started");
         }
-
         System.out.println("System started successfully with " + numProducerThreads + " producer-consumer pairs.");
+    }
+    private synchronized void logThreadEvent(String threadType,String threadID,String status) throws IOException {
+        LogEntry logEntry=new LogEntry(LocalDateTime.now().toString(),threadType,threadID,status);
+        logs.add(logEntry);
+
+        try(FileWriter writer=new FileWriter(JSON_LOG_FILE)){
+            gson.toJson(logs,writer);
+        }catch (IOException e){
+            System.err.println("Error writing to Json LOG file: "+e.getMessage());
+        }
+      //  System.out.println(logEntry);
     }
 
     private void stopSystem() {
@@ -176,9 +193,12 @@ public class TicketingCLI {
 
         // Stop producer threads
         producerThreads.forEach(Thread::interrupt);
+        logThreadEvent("Producer",thread.getID,"Stopped");
 
         // Stop consumer threads
         consumerThreads.forEach(Thread::interrupt);
+        logThreadEvent("Consumer", thread.getId(), "Stopped");
+
 
         try {
             for (Thread thread : producerThreads) {
