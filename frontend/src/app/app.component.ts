@@ -4,6 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LogEntry } from './models/model';
 import { Chart, registerables } from 'chart.js';
+import { MatTableModule } from '@angular/material/table';
+
 Chart.register(...registerables);
 
 @Injectable({
@@ -34,12 +36,15 @@ export class LogService {
 
 @Component({
   selector: 'app-root',
+  imports:[MatTableModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone: true,
 })
 export class AppComponent implements OnInit {
   chart: any; // Chart instance
+  displayedColumns:string[]=['timestamp', 'threadType', 'threadID', 'status'];
+  dataSource: LogEntry[] = [];
 
   constructor(private logService: LogService) {}
 
@@ -62,19 +67,16 @@ export class AppComponent implements OnInit {
       options: {
         responsive: true,
         scales: {
-          x: {
-            title: { display: true, text: 'Timestamp' },
-          },
-          y: {
-            title: { display: true, text: 'Status' },
-          },
+          x: {title: { display: true, text: 'Timestamp' },},
+          y: {title: { display: true, text: 'Status' },},
         },
       },
     });
 
     // Subscribe to the log stream
     this.logService.getLogStream().subscribe((logEntry: LogEntry) => {
-      // Adds data to the chart in this bit
+      // Adds data to the chart in this bit here
+      this.dataSource.push(logEntry);
       this.chart.data.labels.push(logEntry.timestamp);
       this.chart.data.datasets[0].data.push(logEntry.status); // Adjust based on your Y-axis data
       this.chart.update(); // Refresh the chart
