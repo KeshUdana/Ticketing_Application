@@ -1,13 +1,14 @@
 // src/app/components/logs/logs.component.ts
 import { Component, OnInit } from '@angular/core';
-import { LogService } from '../../services/log.service';
-import { LogEntry } from '../../models/log-entry.model';
+import { LogService } from '../service/LogService';
+import { LogEntry } from '../models/model';
 import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.css'],
+  standalone: true
 })
 export class LogsComponent implements OnInit {
   logs: LogEntry[] = [];  // To store the logs
