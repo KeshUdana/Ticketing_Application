@@ -9,8 +9,7 @@ import java.util.UUID;
 public class TicketSaleRepository {
     private Connection connection;
 
-    public TicketSaleRepository() {
-        try {
+    public TicketSaleRepository() {        try {
             this.connection = DatabaseConnection.getConnection();
         } catch (SQLException e) {
             System.out.println("Database connection error: " + e.getMessage());
