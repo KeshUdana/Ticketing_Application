@@ -3,7 +3,7 @@ package managment.backend.model;
 public class LogEntry {
     private String timestamp;
     private String threadType;
-    private String threadId;
+    private Long threadId;
     private String status;
     public LogEntry(String timestamp, String threadType, Long threadId, String status){
         this.timestamp=timestamp;
@@ -15,7 +15,7 @@ public class LogEntry {
 
     public String getTimestamp(){return timestamp;}
     public String getThreadType(){return threadType;}
-    public String getThreadId(){return threadId;}
+    public Long getThreadId(){return threadId;}
     public String getStatus(){return status;}
     public void setTimestamp(String timestamp){
         this.timestamp=timestamp;
@@ -23,7 +23,7 @@ public class LogEntry {
     public void setThreadType(String threadType){
         this.threadType=threadType;
     }
-    public void setThreadId(String threadID){
+    public void setThreadId(Long threadID){
         this.threadId=threadID;
     }
     public void setStatus(String status){
