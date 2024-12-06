@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { LogEntry } from './models/model';
 import { Chart, registerables } from 'chart.js';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 
 Chart.register(...registerables);
 
@@ -36,7 +37,7 @@ export class LogService {
 
 @Component({
   selector: 'app-root',
-  imports:[MatTableModule],
+  imports:[MatTableModule,MatSortModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone: true,
@@ -45,7 +46,7 @@ export class AppComponent implements OnInit {
   chart: any; // Chart instance
   displayedColumns:string[]=['timestamp', 'threadType', 'threadID', 'status'];
   dataSource: LogEntry[] = [];
-
+  title: "Table" | undefined;
   constructor(private logService: LogService) {}
 
   ngOnInit(): void {

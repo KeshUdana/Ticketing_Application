@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticketing System</title>
+  <h1>Welcome to Ticket Simulation</h1>
+</head>
+<body>
+<div>
+  <canvas id="myChart" style="width: 100%; height: 400px;"></canvas>
+</div>
+<main>
+  <div>
+    <h2>Logs</h2>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef> Timestamp </th>
+        <td mat-cell *matCellDef="let element"> {{element.timestamp}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="threadType">
+        <th mat-header-cell *matHeaderCellDef> Thread Type </th>
+        <td mat-cell *matCellDef="let element"> {{element.threadType}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="threadID">
+        <th mat-header-cell *matHeaderCellDef> Thread ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.threadID}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+  </div>
+
+</main>
+</body>
+</html>
