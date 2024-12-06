@@ -1,6 +1,6 @@
 package Startup;
 
-import lombok.extern.java.Log;
+
 import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
@@ -36,7 +36,7 @@ public class TicketingCLI {
     private TicketSaleRepository ticketSaleRepository;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
@@ -49,7 +49,7 @@ public class TicketingCLI {
         System.out.print("Enter your choice: ");
     }
 
-    public void run() {
+    public void run() throws IOException {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
@@ -106,7 +106,7 @@ public class TicketingCLI {
         }
     }
 
-    private void handleControlPanel(Scanner scanner) {
+    private void handleControlPanel(Scanner scanner) throws IOException {
         boolean backToMenu = false;
 
         while (!backToMenu) {
@@ -133,7 +133,7 @@ public class TicketingCLI {
         }
     }
 
-    private void startSystem() {
+    private void startSystem() throws IOException {
         if (systemRunning) {
             System.out.println("The system is already running!");
             return;
@@ -163,7 +163,6 @@ public class TicketingCLI {
         // Start consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
             ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
-           // User user=consumerService.getUser();
             Thread consumerThread=new Thread(consumerService);
             consumerThreads.add(consumerThread);
             consumerThread.start();
@@ -171,7 +170,7 @@ public class TicketingCLI {
         }
         System.out.println("System started successfully with " + numProducerThreads + " producer-consumer pairs.");
     }
-    private synchronized void logThreadEvent(String threadType,String threadID,String status) throws IOException {
+    private synchronized void logThreadEvent(String threadType,Long threadID,String status) throws IOException {
         LogEntry logEntry=new LogEntry(LocalDateTime.now().toString(),threadType,threadID,status);
         logs.add(logEntry);
 
@@ -180,7 +179,6 @@ public class TicketingCLI {
         }catch (IOException e){
             System.err.println("Error writing to Json LOG file: "+e.getMessage());
         }
-      //  System.out.println(logEntry);
     }
 
     private void stopSystem() {
@@ -190,15 +188,34 @@ public class TicketingCLI {
         }
 
         systemRunning = false;
+        //Stop producer threads
+        producerThreads.forEach(thread -> {
+            thread.interrupt();
+            try {
+                logThreadEvent("Producer", thread.getId(),"Stopped");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        //Stop consumer threads
+        consumerThreads.forEach(thread -> {
+            thread.interrupt();
+            try {
+                logThreadEvent("Consumer", thread.getId(), "Stopped");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
+/*
         // Stop producer threads
         producerThreads.forEach(Thread::interrupt);
-        logThreadEvent("Producer",thread.getID,"Stopped");
+        logThreadEvent("Producer",producerThreads.ge,"Stopped");
 
         // Stop consumer threads
         consumerThreads.forEach(Thread::interrupt);
         logThreadEvent("Consumer", thread.getId(), "Stopped");
-
+*/
 
         try {
             for (Thread thread : producerThreads) {

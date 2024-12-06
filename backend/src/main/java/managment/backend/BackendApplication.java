@@ -4,11 +4,12 @@ import Startup.TicketingCLI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.File;
+import java.io.IOException;
 
 @SpringBootApplication
 public class BackendApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// Check if the config.json file exists
 		File configFile = new File("config.json");
 
