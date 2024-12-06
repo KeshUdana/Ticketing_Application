@@ -1,58 +1,32 @@
-import {Component, ViewChild} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+// src/app/services/log.service.ts
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { LogEntry } from './models/model';
 
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatPaginatorModule } from '@angular/material/paginator';
-
-class LogService {
-}
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    MatTableModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+@Injectable({
+  providedIn: 'root',
 })
-export class AppComponent {
+export class LogService {
+  private streamUrl = 'http://localhost:8080/api/logs/stream';  // SSE stream URL from Spring Boot
 
-  displayedColumns: string[] = ['timestamp', 'threadType', 'threadID', 'status'];
-  dataSource = new MatTableDataSource();
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private logService: LogService) {}
 
-  ngOnInit(): void {
-    this.logService.getLogs().subscribe((logs) => {
-      this.dataSource.data = logs;
-      this.dataSource.paginator = this._paginator;
+  // Listen for real-time log updates
+  getLogStream(): Observable<LogEntry> {
+    return new Observable((observer) => {
+      const eventSource = new EventSource(this.streamUrl);
+
+      eventSource.onmessage = (event) => {
+        observer.next(JSON.parse(event.data));  // Parse and emit the new log entry
+      };
+
+      eventSource.onerror = (err) => {
+        observer.error(err);
+        eventSource.close();  // Close the connection on error
+      };
+
+      // Cleanup when the Observable is unsubscribed
+      return () => eventSource.close();
     });
-  }
-
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  exportLogs(): void {
-    const blob = new Blob([JSON.stringify(this.dataSource.data, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'logs.json';
-    a.click();
-    window.URL.revokeObjectURL(url);
   }
 }

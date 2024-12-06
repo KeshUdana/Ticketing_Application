@@ -9,7 +9,7 @@ import { LogEntry } from '../models/model';
 export class LogService {
   private streamUrl = 'http://localhost:8080/api/logs/stream';  // SSE stream URL from Spring Boot
 
-  constructor() {}
+
 
   // Listen for real-time log updates
   getLogStream(): Observable<LogEntry> {
