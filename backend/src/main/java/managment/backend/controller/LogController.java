@@ -2,6 +2,8 @@ package managment.backend.controller;
 
 import com.google.gson.Gson;
 import managment.backend.model.LogEntry;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,8 +20,17 @@ public class LogController {
 
     @GetMapping
     public List<LogEntry> getAllLogs() throws IOException {
-        String json = new String(Files.readAllBytes(Paths.get(JSON_LOG_FILE)));
-        return gson.fromJson(json, new TypeToken<List<LogEntry>>() {}.getType());
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(JSON_LOG_FILE)));
+            return gson.fromJson(json, new TypeToken<List<LogEntry>>() {
+            }.getType());
+        } catch (IOException e) {
+            return toString("Error reading log file");
+        }
+    }
+
+    private List<LogEntry> toString(String errorReadingLogFile) {
+        return null;
     }
 }
 
