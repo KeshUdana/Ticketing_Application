@@ -42,11 +42,21 @@ public class TicketingCLI {
     }
 
     private void displayMainMenu() {
-        System.out.println("+++++++++++Welcome to Ticketing Application++++++++++");
-        System.out.println("\nMain Menu:");
+        String reset = "\033[0m";
+        String green = "\033[32m";
+        String bold = "\033[1m";
+
+        System.out.println(green + "\n**********************************************");
+        System.out.println("          " + bold + "Welcome to the Ticketing System" + reset + "        ");
+        System.out.println("**********************************************" + reset);
+        System.out.println("\nPlease choose an option from the menu below:");
+
+        // Display the options
         System.out.println("1. Configure System");
         System.out.println("2. Exit");
-        System.out.print("Enter your choice: ");
+
+        // Prompt the user for input
+        System.out.print("\nEnter your choice: ");
     }
 
     public void run() throws IOException {
@@ -110,13 +120,17 @@ public class TicketingCLI {
         boolean backToMenu = false;
 
         while (!backToMenu) {
-            System.out.println("\n////// CONTROL PANEL /////");
-            System.out.println("1. START");
-            System.out.println("2. STOP");
-            System.out.println("3. Return to Main Menu");
-            System.out.print("Enter your choice: ");
+            System.out.println("\n**********************************************");
+            System.out.println("                CONTROL PANEL                  ");
+            System.out.println("**********************************************");
 
-            String choice = scanner.nextLine().trim();
+            // Display available options
+            System.out.println("\n1. " + "START");
+            System.out.println("2. " + "STOP");
+            System.out.println("3. " + "Return to Main Menu");
+
+            // Prompt for input
+            System.out.print("\nEnter your choice: "); String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1":
                     startSystem();
@@ -192,7 +206,7 @@ public class TicketingCLI {
         producerThreads.forEach(thread -> {
             thread.interrupt();
             try {
-                logThreadEvent("Producer", thread.getId(),"Stopped");
+                logThreadEvent("Producer-- ", thread.getId(),"-- Stopped");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -201,21 +215,11 @@ public class TicketingCLI {
         consumerThreads.forEach(thread -> {
             thread.interrupt();
             try {
-                logThreadEvent("Consumer", thread.getId(), "Stopped");
+                logThreadEvent("Consumer-- ", thread.getId(), "-- Stopped");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-
-/*
-        // Stop producer threads
-        producerThreads.forEach(Thread::interrupt);
-        logThreadEvent("Producer",producerThreads.ge,"Stopped");
-
-        // Stop consumer threads
-        consumerThreads.forEach(Thread::interrupt);
-        logThreadEvent("Consumer", thread.getId(), "Stopped");
-*/
 
         try {
             for (Thread thread : producerThreads) {
@@ -246,3 +250,12 @@ public class TicketingCLI {
         }
     }
 }
+/*
+        // Stop producer threads
+        producerThreads.forEach(Thread::interrupt);
+        logThreadEvent("Producer",producerThreads.ge,"Stopped");
+
+        // Stop consumer threads
+        consumerThreads.forEach(Thread::interrupt);
+        logThreadEvent("Consumer", thread.getId(), "Stopped");
+*/
