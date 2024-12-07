@@ -59,4 +59,34 @@
 		<artifactId>spring-security-test</artifactId>
 		<scope>test</scope>
 	</dependency>
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	<build>
+		<plugins>
+			<!-- Maven Exec Plugin -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>ng</executable>
+							<arguments>
+								<argument>serve</argument>
+							</arguments>
+							<workingDirectory>${project.basedir}/../angular-project-path</workingDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </dependencies>
+
+<!---->
+
