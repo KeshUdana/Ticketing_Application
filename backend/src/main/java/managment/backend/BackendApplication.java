@@ -13,17 +13,16 @@ import java.io.InputStreamReader;
 public class BackendApplication {
 
 	public static void main(String[] args) throws IOException {
-		// Check if the config.json file exists,usually dis from previosu execution
+		// Check if the config.json file exists, usually from previous execution
 		File configFile = new File("config.json");
-
 
 		if (!configFile.exists()) {
 			// Run the TicketingCLI to gather configuration from the user
-			TicketingCLI.main(args);  //this is the entry pitn .Actual one
+			TicketingCLI.main(args);  // This is the entry point. Actual one
 		} else {
 			System.out.println("CLI from previous running exists bro");
 		}
-		// Start the Angular Server along with Spring Boot for usabiltiy
+		// Start the Angular Server along with Spring Boot for usability
 		Process angularProcess = startAngularServer();
 
 		// Add shutdown hook to terminate Angular server when backend stops
@@ -40,9 +39,11 @@ public class BackendApplication {
 
 	private static Process startAngularServer() {
 		try {
-			String angularProjectPath = "../../frontend";
+			// Provide the absolute path of your frontend folder here,meka only for testing purposes
+			String angularProjectPath = "D:/2ND YEAR/OOP/w20515441_20230038_Concurrent Ticketing Application/frontend";
 			File projectDir = new File(angularProjectPath);
 
+			// Check if the Angular project directory exists and contains angular.json
 			if (!projectDir.exists() || !new File(projectDir, "angular.json").exists()) {
 				throw new IOException("Angular project directory not found or invalid: " + projectDir.getAbsolutePath());
 			}
@@ -72,6 +73,4 @@ public class BackendApplication {
 			return null;
 		}
 	}
-
-
 }

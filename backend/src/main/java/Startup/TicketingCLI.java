@@ -37,6 +37,7 @@ public class TicketingCLI {
 
 
     public static void main(String[] args) throws IOException {
+        System.out.println("PATH: " + System.getenv("PATH"));//for testingpurposes
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
