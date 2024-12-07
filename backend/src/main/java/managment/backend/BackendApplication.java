@@ -48,7 +48,7 @@ public class BackendApplication {
 				throw new IOException("Angular project directory not found or invalid: " + projectDir.getAbsolutePath());
 			}
 
-			ProcessBuilder processBuilder = new ProcessBuilder("ng", "serve");
+			ProcessBuilder processBuilder = new ProcessBuilder("C:\\Users\\hp\\AppData\\Roaming\\npm\\ng", "serve");
 			processBuilder.directory(projectDir);
 			Process process = processBuilder.start();
 
