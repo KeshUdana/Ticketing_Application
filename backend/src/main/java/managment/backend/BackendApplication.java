@@ -3,8 +3,11 @@ package managment.backend;
 import Startup.TicketingCLI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -37,19 +40,38 @@ public class BackendApplication {
 
 	private static Process startAngularServer() {
 		try {
-			String angularProjectPath = "../../../../../frontend";
+			String angularProjectPath = "../frontend";
+			File projectDir = new File(angularProjectPath);
+
+			if (!projectDir.exists() || !new File(projectDir, "angular.json").exists()) {
+				throw new IOException("Angular project directory not found or invalid: " + projectDir.getAbsolutePath());
+			}
 
 			ProcessBuilder processBuilder = new ProcessBuilder("ng", "serve");
-			processBuilder.directory(new File(angularProjectPath));
-			processBuilder.inheritIO(); // Ensures logs are visible in the console
-
-			// Start the Angular process
+			processBuilder.directory(projectDir);
 			Process process = processBuilder.start();
-			System.out.println("Angular server started successfully.");
+
+			// Print output to the console
+			new Thread(() -> {
+				try (BufferedReader reader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()))) {
+					String line;
+					while ((line = reader.readLine()) != null) {
+						System.out.println(line);
+					}
+				} catch (IOException e) {
+					System.err.println("Error reading Angular server output: " + e.getMessage());
+				}
+			}).start();
+
+			System.out.println("Angular server started successfully in: " + projectDir.getAbsolutePath());
 			return process;
 		} catch (IOException e) {
 			System.err.println("Failed to start Angular server: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
+
+
 }
