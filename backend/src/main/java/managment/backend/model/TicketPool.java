@@ -1,8 +1,6 @@
 package managment.backend.model;
 
 import Startup.SystemConfig;
-import managment.backend.model.Ticket;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;

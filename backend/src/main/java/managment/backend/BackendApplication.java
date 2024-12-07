@@ -13,17 +13,17 @@ import java.io.InputStreamReader;
 public class BackendApplication {
 
 	public static void main(String[] args) throws IOException {
-		// Check if the config.json file exists
+		// Check if the config.json file exists,usually dis from previosu execution
 		File configFile = new File("config.json");
 
-		// If the config.json file doesn't exist, run the CLI to gather the config
+
 		if (!configFile.exists()) {
 			// Run the TicketingCLI to gather configuration from the user
-			TicketingCLI.main(args);  // Directly call the main method of TicketingCLI
+			TicketingCLI.main(args);  //this is the entry pitn .Actual one
 		} else {
 			System.out.println("CLI from previous running exists bro");
 		}
-		// Start the Angular Server along with Spring Boot
+		// Start the Angular Server along with Spring Boot for usabiltiy
 		Process angularProcess = startAngularServer();
 
 		// Add shutdown hook to terminate Angular server when backend stops
@@ -40,7 +40,7 @@ public class BackendApplication {
 
 	private static Process startAngularServer() {
 		try {
-			String angularProjectPath = "../frontend";
+			String angularProjectPath = "../../frontend";
 			File projectDir = new File(angularProjectPath);
 
 			if (!projectDir.exists() || !new File(projectDir, "angular.json").exists()) {
