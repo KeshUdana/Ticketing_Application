@@ -2,50 +2,74 @@
 import {useState, useEffect, JSX} from "react";
 import axios from "axios";
 
+import { Line } from "react-chartjs-2";
 import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
     Tooltip,
     Legend,
-} from "recharts";
+} from "chart.js";
 
-type ThreadData = {
-    timestamp: string;
-    activeThreads: number;
-    completedThreads: number;
-};
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const Dashboard: () => JSX.Element = () => {
-    const [threadData, setThreadData] = useState<ThreadData[]>([]);
+const Dashboard = () => {
+    const [producerData, setProducerData] = useState<number[]>([]);
+    const [consumerData, setConsumerData] = useState<number[]>([]);
+    const [timestamps, setTimestamps] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get<ThreadData[]>("/api/analytics");
-                setThreadData(response.data);
+                const response = await fetch("http://localhost:8080/transactions");
+                const data = await response.json();
+
+                setProducerData(data.map((item: any) => item.producerCount));
+                setConsumerData(data.map((item: any) => item.consumerCount));
+                setTimestamps(data.map((item: any) => new Date(item.timestamp).toLocaleTimeString()));
             } catch (error) {
-                console.error("Error fetching thread data:", error);
+                console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
+        const interval = setInterval(fetchData, 5000); // Refresh every 5 seconds
+        return () => clearInterval(interval);
     }, []);
 
+    const data = {
+        labels: timestamps,
+        datasets: [
+            {
+                label: "Producers",
+                data: producerData,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.4,
+            },
+            {
+                label: "Consumers",
+                data: consumerData,
+                borderColor: "rgb(255, 99, 132)",
+                tension: 0.4,
+            },
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: { position: "top" },
+            title: { display: true, text: "Producer & Consumer Threads Behavior" },
+        },
+    };
+
     return (
-        <div style={{ padding: "20px" }}>
-            <h1>Thread Analytics Dashboard</h1>
-            <LineChart width={800} height={400} data={threadData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="timestamp" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="activeThreads" stroke="#8884d8" />
-                <Line type="monotone" dataKey="completedThreads" stroke="#82ca9d" />
-            </LineChart>
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Real-Time Producer & Consumer Visualization</h1>
+            <Line data={data} options={options} />
         </div>
     );
 };

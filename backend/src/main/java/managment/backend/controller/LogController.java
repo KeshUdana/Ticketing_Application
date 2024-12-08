@@ -1,5 +1,5 @@
 package managment.backend.controller;
-
+/*
 
 import managment.backend.model.LogEntry;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +36,7 @@ public class LogController {
         return emitter;
     }
 }
+
+ */
 
 
