@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": "2024-12-08T19:16:49.646424800",
+    "threadType": "Producer ",
+    "threadId": 47,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:49.650425600",
+    "threadType": "Producer ",
+    "threadId": 48,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:49.651420100",
+    "threadType": "Consumer ",
+    "threadId": 49,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:49.652430400",
+    "threadType": "Consumer ",
+    "threadId": 50,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:53.004956900",
+    "threadType": "Producer ",
+    "threadId": 47,
+    "status": "Stopped"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:53.005957200",
+    "threadType": "Producer ",
+    "threadId": 48,
+    "status": "Stopped"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:53.007960900",
+    "threadType": "Consumer ",
+    "threadId": 49,
+    "status": " Stopped"
+  },
+  {
+    "timestamp": "2024-12-08T19:16:53.008959",
+    "threadType": "Consumer ",
+    "threadId": 50,
+    "status": " Stopped"
+  }
+]
