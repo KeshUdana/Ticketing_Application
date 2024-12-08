@@ -1,7 +1,7 @@
 package Startup;
 
 
-import managment.backend.controller.LogServer;
+
 import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
@@ -41,7 +41,7 @@ public class TicketingCLI {
 
     public static void main(String[] args) throws IOException {
         TicketingCLI cli = new TicketingCLI();
-        LogServer.startServer();
+
         cli.run();
     }
 
@@ -210,7 +210,7 @@ public class TicketingCLI {
         producerThreads.forEach(thread -> {
             thread.interrupt();
             try {
-                logThreadEvent("Producer-- ", thread.getId(),"-- Stopped");
+                logThreadEvent("Producer ", thread.getId(),"Stopped");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -219,7 +219,7 @@ public class TicketingCLI {
         consumerThreads.forEach(thread -> {
             thread.interrupt();
             try {
-                logThreadEvent("Consumer-- ", thread.getId(), "-- Stopped");
+                logThreadEvent("Consumer ", thread.getId(), " Stopped");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

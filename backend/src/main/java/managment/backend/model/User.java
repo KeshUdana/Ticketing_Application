@@ -1,19 +1,13 @@
 package managment.backend.model;
 
-import jakarta.persistence.*;
-
-
-@Entity
-@Table(name="Customer")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private String userID;
-    @Column(name="Username")
+
     private String userUsername;
-    @Column(name="Email",nullable = false,unique = true)
+
     private String userEmail;
-    @Column(name="Password")
+
     private String userPassword;
 
     //Constructor

@@ -12,7 +12,11 @@ import java.util.List;
 public class JsonController {
     @GetMapping("/transactions")
     public List<Object> getTransactions() throws Exception {
-        String json = Files.readString(Paths.get("thread_activity.log"));
+
+        String filePath = Paths.get("../../../../../thread_visualize.json").toAbsolutePath().toString();
+        System.out.println("File path being used: " + filePath);
+
+        String json = Files.readString(Paths.get(filePath));
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(json, List.class);
     }

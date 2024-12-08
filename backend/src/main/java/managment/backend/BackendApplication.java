@@ -16,13 +16,13 @@ public class BackendApplication {
 		File configFile = new File("config.json");
 
 		if (!configFile.exists()) {
-
 			TicketingCLI.main(args);  // This is the entry point. Actual one,using core java has been given priority
+			// Start Spring Boot application
+			SpringApplication.run(BackendApplication.class, args);
 		} else {
 			System.out.println("CLI from previous running exists bro");
 		}
-		// Start Spring Boot application
-		SpringApplication.run(BackendApplication.class, args);
+
 	}
 
 
