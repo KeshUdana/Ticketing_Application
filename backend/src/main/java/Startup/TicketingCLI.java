@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static managment.backend.BackendApplication.startAngularServer;
+
 public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
@@ -37,7 +39,7 @@ public class TicketingCLI {
 
 
     public static void main(String[] args) throws IOException {
-        System.out.println("PATH: " + System.getenv("PATH"));//for testingpurposes
+        startAngularServer();
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }

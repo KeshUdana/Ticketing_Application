@@ -22,12 +22,13 @@ public class Ticket {
     public Ticket() {}
 
     // Parameterized constructor
+    /*
     public Ticket(String ticketID,double ticketPrice,String ticketType,String timeStamp) {
         this.ticketID=ticketID;
         this.ticketPrice = ticketPrice;
         this.ticketType =ticketType;
         this.timeStamp = timeStamp; // Automatically sets the current time
-    }
+    }*/
 
 
 

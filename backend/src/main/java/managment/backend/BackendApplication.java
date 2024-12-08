@@ -19,6 +19,7 @@ public class BackendApplication {
 		if (!configFile.exists()) {
 			// Run the TicketingCLI to gather configuration from the user
 			TicketingCLI.main(args);  // This is the entry point. Actual one
+			startAngularServer();
 		} else {
 			System.out.println("CLI from previous running exists bro");
 		}
@@ -37,7 +38,7 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
-	private static Process startAngularServer() {
+	public static Process startAngularServer() {
 		try {
 			// Provide the absolute path of your frontend folder here,meka only for testing purposes
 			String angularProjectPath = "D:/2ND YEAR/OOP/w20515441_20230038_Concurrent Ticketing Application/frontend";
