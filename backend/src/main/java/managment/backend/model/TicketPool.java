@@ -1,10 +1,13 @@
 package managment.backend.model;
 
 import Startup.SystemConfig;
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class TicketPool {
     private static TicketPool instance; // Singleton instance
     private BlockingQueue<Ticket> ticketQueue;

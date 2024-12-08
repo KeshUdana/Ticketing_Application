@@ -5,6 +5,7 @@ import managment.backend.model.TicketPool;
 import managment.backend.model.User;
 import managment.backend.repository.TicketSaleRepository;
 import Startup.SystemConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,14 +16,12 @@ public class ConsumerService implements Runnable {
     private final TicketPool ticketPool;
     private final User user;
     private final TicketSaleRepository ticketSaleRepository;
-
-    //  private final int userRetrievalRate;
     public SystemConfig config;
     private boolean systemRunning;
 
 
     // Constructor
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
     public ConsumerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {
         if (!ticketPool.isInitialized()) {
             throw new IllegalStateException("TicketPool must be initialized before creating ProducerService.");

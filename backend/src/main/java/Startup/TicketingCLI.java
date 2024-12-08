@@ -2,6 +2,7 @@ package Startup;
 
 
 
+import managment.backend.BackendApplication;
 import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
@@ -10,6 +11,7 @@ import managment.backend.service.ProducerService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.springframework.boot.SpringApplication;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,7 +43,6 @@ public class TicketingCLI {
 
     public static void main(String[] args) throws IOException {
         TicketingCLI cli = new TicketingCLI();
-
         cli.run();
     }
 

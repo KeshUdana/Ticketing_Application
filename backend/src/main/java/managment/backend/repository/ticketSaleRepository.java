@@ -2,10 +2,12 @@ package managment.backend.repository;
 
 import managment.backend.persistence.DatabaseConnection;
 import managment.backend.persistence.TicketSales;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.UUID;
 
+@Repository
 public class TicketSaleRepository {
     private Connection connection;
 

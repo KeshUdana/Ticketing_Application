@@ -3,12 +3,14 @@ package managment.backend;
 import Startup.TicketingCLI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 
 import java.io.File;
 import java.io.IOException;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "Startup")
 public class BackendApplication {
 
 	public static void main(String[] args) throws IOException {
@@ -16,14 +18,14 @@ public class BackendApplication {
 		File configFile = new File("config.json");
 
 		if (!configFile.exists()) {
-			TicketingCLI.main(args);  // This is the entry point. Actual one,using core java has been given priority
 			// Start Spring Boot application
 			SpringApplication.run(BackendApplication.class, args);
+			TicketingCLI.main(args);  // This is the entry point. Actual one,using core java has been given priority
 		} else {
 			System.out.println("CLI from previous running exists bro");
 		}
-
 	}
-
-
 }
+
+
+

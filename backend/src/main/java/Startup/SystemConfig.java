@@ -2,6 +2,8 @@ package Startup;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,7 +11,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Configuration
+@Component
 public class SystemConfig {
+
     private static final Logger logger = Logger.getLogger(SystemConfig.class.getName());
 
     private int totalTickets; // Total tickets in the system
@@ -20,36 +25,57 @@ public class SystemConfig {
     private static final String CONFIG_FILE = "config.json";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Default Constructor
+    // Default constructor
     public SystemConfig() {}
 
     // Getters and Setters
-    public int getTotalTickets() { return totalTickets; }
-    public int getMaxTicketCapacity() { return maxTicketCapacity; }
-    public int getVendorReleaseRate() { return vendorReleaseRate; }
-    public int getUserRetrievalRate() { return userRetrievalRate; }
+    public int getTotalTickets() {
+        return totalTickets;
+    }
 
     public void setTotalTickets(int totalTickets) {
-        if(totalTickets>0){
+        if (totalTickets > 0) {
             this.totalTickets = totalTickets;
-        }else{
-            System.out.println("Cant be less than 0");
+        } else {
+            System.out.println("Total tickets cannot be less than 0.");
         }
     }
+
+    public int getMaxTicketCapacity() {
+        return maxTicketCapacity;
+    }
+
     public void setMaxTicketCapacity(int maxTicketCapacity) {
-        if(maxTicketCapacity>0){this.maxTicketCapacity = maxTicketCapacity;
-        }else{
-            System.out.println("Cant be less than 0");
+        if (maxTicketCapacity > 0) {
+            this.maxTicketCapacity = maxTicketCapacity;
+        } else {
+            System.out.println("Max ticket capacity cannot be less than 0.");
         }
     }
+
+    public int getVendorReleaseRate() {
+        return vendorReleaseRate;
+    }
+
     public void setVendorReleaseRate(int vendorReleaseRate) {
-        if(vendorReleaseRate>0){this.vendorReleaseRate = vendorReleaseRate;}else{
-        System.out.println("Cant be less than 0");
-    } }
+        if (vendorReleaseRate > 0) {
+            this.vendorReleaseRate = vendorReleaseRate;
+        } else {
+            System.out.println("Vendor release rate cannot be less than 0.");
+        }
+    }
+
+    public int getUserRetrievalRate() {
+        return userRetrievalRate;
+    }
+
     public void setUserRetrievalRate(int userRetrievalRate) {
-        if(userRetrievalRate>0){this.userRetrievalRate = userRetrievalRate;}else{
-        System.out.println("Cant be less than 0");
-        } }
+        if (userRetrievalRate > 0) {
+            this.userRetrievalRate = userRetrievalRate;
+        } else {
+            System.out.println("User retrieval rate cannot be less than 0.");
+        }
+    }
 
     // Save Configuration to JSON
     public static void saveConfig(SystemConfig config) {
