@@ -1,5 +1,7 @@
+"use client";
 import {useState, useEffect, JSX} from "react";
 import axios from "axios";
+
 import {
     LineChart,
     Line,
@@ -22,7 +24,7 @@ const Dashboard: () => JSX.Element = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get<ThreadData[]>("/api/threads/analytics");
+                const response = await axios.get<ThreadData[]>("/api/analytics");
                 setThreadData(response.data);
             } catch (error) {
                 console.error("Error fetching thread data:", error);

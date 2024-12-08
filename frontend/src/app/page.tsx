@@ -1,3 +1,5 @@
+"use client";
+
 import Dashboard from "@/app/graph";  // Import Dashboard correctly
 
 export default function Home() {
