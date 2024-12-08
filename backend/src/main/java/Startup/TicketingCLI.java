@@ -1,6 +1,7 @@
 package Startup;
 
 
+import managment.backend.controller.LogServer;
 import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static managment.backend.BackendApplication.startAngularServer;
+
 
 public class TicketingCLI {
 
@@ -39,8 +40,8 @@ public class TicketingCLI {
 
 
     public static void main(String[] args) throws IOException {
-        startAngularServer();
         TicketingCLI cli = new TicketingCLI();
+        LogServer.startServer();
         cli.run();
     }
 
@@ -253,12 +254,4 @@ public class TicketingCLI {
         }
     }
 }
-/*
-        // Stop producer threads
-        producerThreads.forEach(Thread::interrupt);
-        logThreadEvent("Producer",producerThreads.ge,"Stopped");
 
-        // Stop consumer threads
-        consumerThreads.forEach(Thread::interrupt);
-        logThreadEvent("Consumer", thread.getId(), "Stopped");
-*/
