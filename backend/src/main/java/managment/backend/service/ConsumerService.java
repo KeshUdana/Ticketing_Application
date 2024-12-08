@@ -32,7 +32,7 @@ public class ConsumerService implements Runnable {
         this.systemRunning = true; // Start with the producer running
 
 
-   //Initliaze Consumer details
+   //Initialize Consumer details
     this.user=new User();
     user.setUserID(UUID.randomUUID().toString().substring(0,5));
     user.setUserUsername("USER-name");
@@ -72,8 +72,5 @@ public class ConsumerService implements Runnable {
     public void stop() {
         systemRunning = false;
     }
-    // Getter for user info to log in TicketingCLI
-    public User getUser() {
-        return this.user;
-    }
+
 }
