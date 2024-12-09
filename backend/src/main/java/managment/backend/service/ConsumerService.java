@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class ConsumerService implements Runnable {
@@ -18,6 +20,9 @@ public class ConsumerService implements Runnable {
     private final TicketSaleRepository ticketSaleRepository;
     public SystemConfig config;
     private boolean systemRunning;
+    //For front end
+    BlockingQueue<String> updatesQueue = new LinkedBlockingQueue<>();
+
 
 
     // Constructor
@@ -52,6 +57,7 @@ public class ConsumerService implements Runnable {
 
                 // Retrieve and process ticket
                 Ticket ticket = ticketPool.retrieveTicket();
+                updatesQueue.put("Ticket consumed: " + ticket);
                 ticketPool.incrementTicketsConsumed();
 
                 // Log the transaction in TicketingCLI

@@ -1,8 +1,6 @@
 package Startup;
 
 
-
-import managment.backend.BackendApplication;
 import managment.backend.model.LogEntry;
 import managment.backend.model.TicketPool;
 import managment.backend.repository.TicketSaleRepository;
@@ -11,7 +9,7 @@ import managment.backend.service.ProducerService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.springframework.boot.SpringApplication;
+
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +18,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class TicketingCLI {
@@ -38,10 +37,12 @@ public class TicketingCLI {
     private final List<LogEntry>logs=new ArrayList<>();
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
     private static final String CONFIG_FILE = "config.json";
-    private TicketSaleRepository ticketSaleRepository;
+
 
 
     public static void main(String[] args) throws IOException {
+        // Pass ApplicationContext to the TicketingCLI constructor
+       // ApplicationContext context = (ApplicationContext) SpringApplication.run(BackendApplication.class, args);
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
@@ -78,12 +79,13 @@ public class TicketingCLI {
                 case "2":
                     System.out.println("Exiting Ticket Management System CLI.");
                     exit = true;
+
                     break;
                 default:
                     System.out.println("Invalid choice. Please select a valid option.");
             }
 
-            // If config.json exists, allow access to the control panel
+
             if (new File(CONFIG_FILE).exists() && !exit) {
                 handleControlPanel(scanner);
             } else if (!exit) {
@@ -205,7 +207,6 @@ public class TicketingCLI {
             System.out.println("The system is not currently running.");
             return;
         }
-
         systemRunning = false;
         //Stop producer threads
         producerThreads.forEach(thread -> {

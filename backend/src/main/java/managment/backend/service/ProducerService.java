@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-@SuppressWarnings("ALL")
+
 @Service
 public class ProducerService implements Runnable {
     private final TicketPool ticketPool;
@@ -24,6 +26,8 @@ public class ProducerService implements Runnable {
     private TicketSaleRepository ticketSaleRepository;
     private boolean systemRunning; // Flag to control when to stop the producer
     private User user;
+    //Queues for front end
+    BlockingQueue<String> updatesQueue = new LinkedBlockingQueue<>();
 
     @Autowired
     public ProducerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {
@@ -58,30 +62,28 @@ public class ProducerService implements Runnable {
                     break;
                 }
 
-                //Generate a new user for the transaction
+                //Generate a new user
                 User user=new User();
                 user.setUserID(UUID.randomUUID().toString().substring(0,5));//UUID woth just 5 character
                 user.setUserUsername("USER-name");
                 user.setUserEmail("user@gmail.com");
                 user.setUserPassword(UUID.randomUUID().toString());
 
-                // Generate a new ticket and set its properties using setters
+
                 Ticket ticket = new Ticket();
                 ticket.setTicketID(UUID.randomUUID().toString());//Unique UUID
                 ticket.setTicketType(Math.random()<0.5?"VIP":"Regular");
                 ticket.setTicketPrice(ticket.getTicketType()=="VIP"?1000.00:500.0);
                 ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
 
-
-
                 //Using gnerateTicektSale mthod instead as encapsualtion
                 TicketSales sale=generateTicketSale(ticket,vendor,user);
-                //Save the transaction to the database
                 ticketSaleRepository.save(sale);
                 System.out.println("Transaction saved for Ticket ID: " + ticket.getTicketID());
 
-                //Add the ticekt tot the pool and increment the count of produced ticekts
+
                 ticketPool.addTicket(ticket);
+                updatesQueue.put("Ticket produced: " + ticket);
                 ticketPool.incrementTicketsProduced();
 
                 System.out.println("Vendor " +
@@ -90,7 +92,7 @@ public class ProducerService implements Runnable {
                         +ticket.getTicketPrice()+", "
                         +ticket.getTicketType());
 
-                // Simulate vendor release rate
+
                 Thread.sleep(1000 / config.getVendorReleaseRate());
             }
         } catch (InterruptedException e) {
@@ -110,12 +112,5 @@ public class ProducerService implements Runnable {
     sale.setTicketType(ticket.getTicketType());
     return sale;
     }
-
-
-    public Vendor getVendor() {
-        return this.vendor;
-    }
-
-
 }
 
