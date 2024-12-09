@@ -11,12 +11,14 @@ import org.springframework.context.annotation.ComponentScan;
 import java.io.File;
 import java.io.IOException;
 
-@SpringBootApplication(exclude = {
-		DataSourceAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class,
-		SecurityAutoConfiguration.class
-})
-@ComponentScan(basePackages = "Startup")
+@SpringBootApplication(
+		exclude = {
+				DataSourceAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
+				SecurityAutoConfiguration.class
+		}
+)
+@ComponentScan(basePackages = {"Startup"})
 public class BackendApplication {
 
 	public static void main(String[] args) throws IOException {
@@ -26,19 +28,9 @@ public class BackendApplication {
 		if (!configFile.exists()) {
 			// Start Spring Boot application
 			SpringApplication.run(BackendApplication.class, args);
-
-			// Run CLI application
-			runTicketingCLI(args);
-		} else {
-			System.out.println("CLI from previous session exists. Delete it and try again.");
-		}
-	}
-
-	private static void runTicketingCLI(String[] args) {
-		try {
 			TicketingCLI.main(args);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} else {
+			System.out.println("CLI from a previous session exists. Delete it and try again.");
 		}
 	}
 }

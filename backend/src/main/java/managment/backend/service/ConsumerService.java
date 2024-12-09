@@ -23,8 +23,6 @@ public class ConsumerService implements Runnable {
     //For front end
     BlockingQueue<String> updatesQueue = new LinkedBlockingQueue<>();
 
-
-
     // Constructor
     @Autowired
     public ConsumerService(TicketPool ticketPool, SystemConfig config, TicketSaleRepository ticketSaleRepository) {

@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Configuration
-@Component
 public class SystemConfig {
 
     private static final Logger logger = Logger.getLogger(SystemConfig.class.getName());

@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class TicketingCLI {
@@ -41,8 +39,6 @@ public class TicketingCLI {
 
 
     public static void main(String[] args) throws IOException {
-        // Pass ApplicationContext to the TicketingCLI constructor
-       // ApplicationContext context = (ApplicationContext) SpringApplication.run(BackendApplication.class, args);
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
