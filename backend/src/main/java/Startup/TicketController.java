@@ -12,9 +12,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @RestController
-@RequestMapping("/events")
 public class TicketController { private BlockingQueue<String> updatesQueue = new LinkedBlockingQueue<>();
-    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public void streamUpdates(HttpServletResponse response) throws IOException {
         System.out.println("Endpoint '/events' accessed!"); // Debug log to see if the connevtion s there
 

@@ -35,6 +35,8 @@ public class TicketingCLI {
     private final List<LogEntry>logs=new ArrayList<>();
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
     private static final String CONFIG_FILE = "config.json";
+    private static int producerCount = 0;
+    private static int consumerCount = 0;
 
 
 
@@ -169,10 +171,11 @@ public class TicketingCLI {
         // Start producer threads and consumer threads
         for (int i = 0; i < numProducerThreads; i++) {
             ProducerService producerService=new ProducerService(ticketPool,config,ticketSaleRepository);
-          //  Vendor vendor=producerService.getVendor();
             Thread producerThread=new Thread(producerService);
+
             producerThreads.add(producerThread);
             producerThread.start();
+            producerCount++;
             logThreadEvent("Producer ",producerThread.getId()," Started");
 
 
@@ -181,8 +184,10 @@ public class TicketingCLI {
         for (int i = 0; i < numProducerThreads; i++) {
             ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
             Thread consumerThread=new Thread(consumerService);
+
             consumerThreads.add(consumerThread);
             consumerThread.start();
+            consumerCount++;
             logThreadEvent("Consumer ",consumerThread.getId()," Started");
         }
         System.out.println("System started successfully with " + numProducerThreads + " producer-consumer pairs.");
@@ -207,6 +212,7 @@ public class TicketingCLI {
         //Stop producer threads
         producerThreads.forEach(thread -> {
             thread.interrupt();
+            producerCount--;
             try {
                 logThreadEvent("Producer ", thread.getId(),"Stopped");
             } catch (IOException e) {
@@ -216,6 +222,7 @@ public class TicketingCLI {
         //Stop consumer threads
         consumerThreads.forEach(thread -> {
             thread.interrupt();
+            consumerCount--;
             try {
                 logThreadEvent("Consumer ", thread.getId(), " Stopped");
             } catch (IOException e) {
@@ -237,7 +244,16 @@ public class TicketingCLI {
 
         System.out.println("System stopped successfully.");
     }
+    //////////////////////////////////////////////////////////////
+    // Get the current thread counts
+    public static int getProducerCount() {
+        return producerCount;
+    }
 
+    public static int getConsumerCount() {
+        return consumerCount;
+    }
+    //////////////////////////////////////////////////////////////////
     private int getValidatedInteger(Scanner scanner) {
         while (true) {
             try {
