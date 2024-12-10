@@ -32,7 +32,7 @@ const Dashboard: () => JSX.Element = () => {
         };
 
         // Start streaming updates
-        const eventSource = streamThreadCounts(updateFromStream);
+     //   const eventSource = streamThreadCounts(updateFromStream);
 
         // Polling fallback (optional)
         const fetchData = async () => {
@@ -67,8 +67,8 @@ const Dashboard: () => JSX.Element = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="activeThreads" stroke="#8884d8" />
-                <Line type="monotone" dataKey="completedThreads" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="activeThreads/Producer" stroke="#8884d8" />
+                <Line type="monotone" dataKey="completedThreads/Consumer" stroke="#82ca9d" />
             </LineChart>
         </div>
     );
