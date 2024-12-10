@@ -1,25 +1,43 @@
 package Startup;
 
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Map;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/events")
 public class TicketController {
-    private  TicketService ticketService;
-    public TicketController(TicketService ticketService){
-        this.ticketService=ticketService;
+
+    private final TicketService ticketService;
+
+    public TicketController(TicketService ticketService) {
+        this.ticketService = ticketService;
     }
+
     @GetMapping("/counts")
-    public Map<String, Integer> getThreadCounts() {
-        return Map.of(
-                "producerCount", ticketService.getProducerCount(),
-                "consumerCount", ticketService.getConsumerCount()
-        );
+    public SseEmitter streamThreadCounts() {
+        SseEmitter emitter = new SseEmitter();
+
+        new Thread(() -> {
+            try {
+                while (true) {
+
+                    emitter.send(Map.of(
+                            "producerCount", ticketService.getProducerCount(),
+                            "consumerCount", ticketService.getConsumerCount()
+                    ));
+                    Thread.sleep(1000);
+                }
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        }).start();
+        emitter.onCompletion(() -> emitter.complete());
+        emitter.onTimeout(() -> emitter.complete());
+
+        return emitter;
     }
 }
-

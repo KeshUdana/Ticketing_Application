@@ -44,10 +44,6 @@ public class TicketSales {
         this.transactionTime = transactionTime;
         this.vendor = vendor;
         this.user = user;
-
-
-
-
     }
 
     // Default constructor
