@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, JSX } from "react";
-import { fetchCounts, streamThreadCounts } from "./api"; // Import custom API module
+import { ThreadCounts } from "@/app/apiTypes";
 import {
     LineChart,
     Line,
@@ -21,8 +21,26 @@ type ThreadData = {
 const Dashboard: () => JSX.Element = () => {
     const [threadData, setThreadData] = useState<ThreadData[]>([]);
 
+    // (Dis a fallback function)
+    const fetchCounts = async (): Promise<{ producerCount: number; consumerCount: number }> => {
+        try {
+            const response = await fetch("http://localhost:8080/events/counts");
+            if (!response.ok) {
+                throw new Error("Failed to fetch counts");
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching counts:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
-        const updateFromStream = (data: { producerCount: number; consumerCount: number }) => {
+
+        const eventSource = new EventSource("http://localhost:8080/events/counts");
+
+        eventSource.onmessage = (event) => {
+            const data: ThreadCounts = JSON.parse(event.data);
             const newEntry: ThreadData = {
                 timestamp: new Date().toLocaleTimeString(),
                 activeThreads: data.producerCount,
@@ -31,10 +49,7 @@ const Dashboard: () => JSX.Element = () => {
             setThreadData((prev) => [...prev.slice(-9), newEntry]);
         };
 
-        // Start streaming updates
-     //   const eventSource = streamThreadCounts(updateFromStream);
 
-        // Polling fallback (optional)
         const fetchData = async () => {
             try {
                 const { producerCount, consumerCount } = await fetchCounts();
@@ -49,12 +64,12 @@ const Dashboard: () => JSX.Element = () => {
             }
         };
 
-        const interval = setInterval(fetchData, 5000); // Poll every 5 seconds
+        const interval = setInterval(fetchData, 5000);
+
 
         return () => {
-            clearInterval(interval); // Clean up polling
-            const eventSource: EventSource & { close: () => void } = new EventSource("http://localhost:8080/events/count");
-
+            eventSource.close();
+            clearInterval(interval);
         };
     }, []);
 
@@ -67,8 +82,8 @@ const Dashboard: () => JSX.Element = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="activeThreads/Producer" stroke="#8884d8" />
-                <Line type="monotone" dataKey="completedThreads/Consumer" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="activeThreads" stroke="#8884d8" />
+                <Line type="monotone" dataKey="completedThreads" stroke="#82ca9d" />
             </LineChart>
         </div>
     );

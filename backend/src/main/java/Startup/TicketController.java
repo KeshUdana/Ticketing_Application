@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.util.Map;
 
 @RestController
-//@RequestMapping(value = "/events")
+@RequestMapping(value = "/events")
 public class TicketController {
 
     private final TicketService ticketService;
