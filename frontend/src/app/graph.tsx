@@ -1,4 +1,5 @@
 "use client";
+
 import {useState, useEffect, JSX} from "react";
 import axios from "axios";
 
@@ -24,14 +25,29 @@ const Dashboard: () => JSX.Element = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get<ThreadData[]>("/api/analytics");
-                setThreadData(response.data);
+
+                const response = await axios.get("http://localhost:8080/events/counts");
+                const { producerCount, consumerCount } = response.data;
+
+                // Add timestamped data
+                const newEntry: ThreadData = {
+                    timestamp: new Date().toLocaleTimeString(),
+                    activeThreads: producerCount,
+                    completedThreads: consumerCount,
+                };
+
+
+                setThreadData((prev) => [...prev.slice(-9), newEntry]);
             } catch (error) {
                 console.error("Error fetching thread data:", error);
             }
         };
 
+
         fetchData();
+        const interval = setInterval(fetchData, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(interval); // Clean up interval on unmount
     }, []);
 
     return (

@@ -1,8 +1,8 @@
 package Startup;
 
 
-import managment.backend.model.LogEntry;
-import managment.backend.model.TicketPool;
+import managment.backend.model.*;
+import managment.backend.persistence.TicketSales;
 import managment.backend.repository.TicketSaleRepository;
 import managment.backend.service.ConsumerService;
 import managment.backend.service.ProducerService;
@@ -19,19 +19,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 @Component
 public class TicketingCLI {
 
     private volatile boolean systemRunning = false;
     private TicketPool ticketPool;
+    private Vendor vendor;
 
-    // Shared resources
+
 
     private List<Thread> producerThreads = new ArrayList<>();
     private List<Thread> consumerThreads = new ArrayList<>();
 
-    //Attributes needed for front end
+
     private static final String JSON_LOG_FILE="thread_visualize.json";
     private final List<LogEntry>logs=new ArrayList<>();
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
@@ -41,7 +44,7 @@ public class TicketingCLI {
 
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         TicketingCLI cli = new TicketingCLI();
         cli.run();
     }
@@ -64,7 +67,7 @@ public class TicketingCLI {
         System.out.print("\nEnter your choice: ");
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
@@ -83,7 +86,6 @@ public class TicketingCLI {
                 default:
                     System.out.println("Invalid choice. Please select a valid option.");
             }
-
 
             if (new File(CONFIG_FILE).exists() && !exit) {
                 handleControlPanel(scanner);
@@ -108,7 +110,6 @@ public class TicketingCLI {
         System.out.print("Enter customer retrieval rate: ");
         config.setUserRetrievalRate(getValidatedInteger(scanner));
 
-        // Save configuration
         SystemConfig.saveConfig(config);
         System.out.println("System configuration saved successfully.");
 
@@ -116,13 +117,14 @@ public class TicketingCLI {
         try {
             this.ticketPool = TicketPool.getInstance();
             ticketPool.initialize(config);
-            System.out.println(" ");
+            // Initialize Ticketing Repository and Pool
+            System.out.println("TicketPool initialized ");
         } catch (IllegalStateException | IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private void handleControlPanel(Scanner scanner) throws IOException {
+    private void handleControlPanel(Scanner scanner) throws IOException, InterruptedException {
         boolean backToMenu = false;
 
         while (!backToMenu) {
@@ -153,50 +155,86 @@ public class TicketingCLI {
         }
     }
 
-    private void startSystem() throws IOException {
+    private void startSystem() throws IOException, InterruptedException {
         if (systemRunning) {
             System.out.println("The system is already running!");
             return;
         }
         systemRunning = true;
 
-        // Load configuration
         SystemConfig config = SystemConfig.loadConfig();
         int totalTickets = config.getTotalTickets();
         int maxCapacity = config.getMaxTicketCapacity();
         int numProducerThreads = totalTickets / maxCapacity + (totalTickets % maxCapacity > 0 ? 1 : 0);
+        int numConsumers = config.getTotalTickets();
 
-        //Initialize Ticketing Repository before threads start
         TicketSaleRepository ticketSaleRepository = new TicketSaleRepository();
+        CountDownLatch latch = new CountDownLatch(1);
 
-        // Start producer threads and consumer threads
+        // Start producer threads
         for (int i = 0; i < numProducerThreads; i++) {
-            ProducerService producerService=new ProducerService(ticketPool,config,ticketSaleRepository);
-            Thread producerThread=new Thread(producerService);
+            Vendor vendor = createVendor();
+            Thread producerThread = new Thread(() -> {
+                try {
+                    latch.await();
+                    while (ticketPool.getTicketsProduced() < config.getTotalTickets()) {
+
+                        User user = createUser();
+                        Ticket ticket = createTicket();
+
+                        TicketSales sale = generateTicketSale(ticket, vendor, user);
+                        ticketSaleRepository.save(sale);
+                        ticketPool.addTicket(ticket);
+                        ticketPool.incrementTicketsProduced();
+
+                        logTicketDetails(vendor, ticket);
+                        Thread.sleep(1000 / config.getVendorReleaseRate());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Producer thread interrupted.");
+                }
+            });
 
             producerThreads.add(producerThread);
             producerThread.start();
             producerCount++;
-            logThreadEvent("Producer ",producerThread.getId()," Started");
-
-
+            logThreadEvent("Producer ", producerThread.getId(), " Started");
         }
+
         // Start consumer threads
-        for (int i = 0; i < numProducerThreads; i++) {
-            ConsumerService consumerService=new ConsumerService(ticketPool,config,ticketSaleRepository);
-            Thread consumerThread=new Thread(consumerService);
+        for (int j = 0; j < numConsumers; j++) {
+            Thread consumerThread = new Thread(() -> {
+                try {
+                    latch.await(); // Wait until `TicketPool` is ready
+                    while (true) {
+                        Ticket ticket = ticketPool.retrieveTicket();
+                        ticketPool.incrementTicketsConsumed();
+                        if (ticket == null) {
+                            break; // Exit if no tickets are left
+                        }
+                        logThreadEvent("Consumer ", Thread.currentThread().getId(), " Processed Ticket ID: " + ticket.getTicketID());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Consumer thread interrupted.");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             consumerThreads.add(consumerThread);
             consumerThread.start();
             consumerCount++;
-            logThreadEvent("Consumer ",consumerThread.getId()," Started");
+           // System.out.println("Consumer " + consumerThread.getId() + " Started");
         }
-        System.out.println("System started successfully with " + numProducerThreads + " producer-consumer pairs.");
+
+        latch.countDown();
+        System.out.println("System started successfully with " + numProducerThreads + " producers and " + numConsumers + " consumers");
     }
     private synchronized void logThreadEvent(String threadType,Long threadID,String status) throws IOException {
         LogEntry logEntry=new LogEntry(LocalDateTime.now().toString(),threadType,threadID,status);
         logs.add(logEntry);
-
         try(FileWriter writer=new FileWriter(JSON_LOG_FILE)){
             gson.toJson(logs,writer);
         }catch (IOException e){
@@ -207,28 +245,25 @@ public class TicketingCLI {
     private void stopSystem() {
         if (!systemRunning) {
             System.out.println("The system is not currently running.");
-            return;
-        }
+            return;}
         systemRunning = false;
-        //Stop producer threads
+
         producerThreads.forEach(thread -> {
             thread.interrupt();
             producerCount--;
             try {
                 logThreadEvent("Producer ", thread.getId(),"Stopped");
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                throw new RuntimeException(e);}
         });
-        //Stop consumer threads
+
         consumerThreads.forEach(thread -> {
             thread.interrupt();
             consumerCount--;
             try {
                 logThreadEvent("Consumer ", thread.getId(), " Stopped");
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                throw new RuntimeException(e);}
         });
 
         try {
@@ -246,14 +281,10 @@ public class TicketingCLI {
         System.out.println("System stopped successfully.");
     }
     //////////////////////////////////////////////////////////////
-    // Get the current thread counts
-    public static int getProducerCount() {
-        return producerCount;
-    }
+    // Get the current thread counts for front end
+    public static int getProducerCount() {return producerCount;}
+    public static int getConsumerCount(){return consumerCount;}
 
-    public static int getConsumerCount() {
-        return consumerCount;
-    }
     //////////////////////////////////////////////////////////////////
     private int getValidatedInteger(Scanner scanner) {
         while (true) {
@@ -268,5 +299,51 @@ public class TicketingCLI {
             }
         }
     }
+    /////////////////////////////////////////////////////////////////////////
+    //Producer Related Code
+    private Vendor createVendor(){
+        this.vendor=new Vendor();
+        vendor.setVendorID(UUID.randomUUID().toString().substring(0,5));
+        vendor.setVendorUsername("Vendor-name");
+        vendor.setVendorEmail("vendor@gmail.com");
+        vendor.setVendorPassword(UUID.randomUUID().toString());
+        return vendor;
+    }
+    private User createUser() {
+        User user = new User();
+        user.setUserID(UUID.randomUUID().toString().substring(0, 8)); // Longer unique ID
+        user.setUserUsername("USER-name");
+        user.setUserEmail("user@gmail.com");
+        user.setUserPassword(UUID.randomUUID().toString());
+        return user;
+    }
+
+    private Ticket createTicket() {
+        Ticket ticket = new Ticket();
+        ticket.setTicketID(UUID.randomUUID().toString());
+        ticket.setTicketType(Math.random() < 0.5 ? "VIP" : "Regular");
+        ticket.setTicketPrice(ticket.getTicketType().equals("VIP") ? 1000.00 : 500.0);
+        ticket.setTimeStamp(java.time.LocalDateTime.now().toString());
+        return ticket;
+    }
+
+    private void logTicketDetails(Vendor vendor, Ticket ticket) {
+        System.out.println("========== Ticket Added ==========");
+        System.out.printf("Vendor ID: %-15s%n", vendor.getVendorID());
+        System.out.printf("Ticket ID: %-15s%n", ticket.getTicketID());
+        System.out.printf("Price: %-15.2f%n", ticket.getTicketPrice());
+        System.out.printf("Type: %-15s%n", ticket.getTicketType());
+    }
+    private TicketSales generateTicketSale(Ticket ticket, Vendor vendor, User user){
+        TicketSales sale=new TicketSales();
+        sale.setTicket(ticket);
+        sale.setVendor(vendor);
+        sale.setUser(user);
+        sale.setTransactionTime(LocalDateTime.now());
+        sale.setTicketPrice(ticket.getTicketPrice());
+        sale.setTicketType(ticket.getTicketType());
+        return sale;
+    }
+
 }
 

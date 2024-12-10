@@ -11,11 +11,12 @@ public class TicketService {
     }
 
     public int getProducerCount() {
-        return TicketingCLI.getProducerCount(); // Static method call
+        return TicketingCLI.getProducerCount();
     }
 
     public int getConsumerCount() {
-        return TicketingCLI.getConsumerCount(); // Static method call
+        return TicketingCLI.getConsumerCount();
     }
 }
+
 

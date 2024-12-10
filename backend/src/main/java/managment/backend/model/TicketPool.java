@@ -37,7 +37,7 @@ public class TicketPool {
     ///////////////////////////////////////////////////////////////////////
 
     // Private constructor for Singleton pattern
-    private TicketPool() {
+    public TicketPool() {
     }
 
     // Singleton getter
@@ -89,4 +89,6 @@ public class TicketPool {
     public boolean isInitialized() {
         return initialized;
     }
+
+
 }

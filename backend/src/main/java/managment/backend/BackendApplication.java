@@ -21,7 +21,7 @@ import java.io.IOException;
 @ComponentScan(basePackages = {"Startup"})
 public class BackendApplication {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		// Check if the config.json file exists
 		File configFile = new File("config.json");
 

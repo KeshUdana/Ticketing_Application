@@ -13,15 +13,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
-public class ConsumerService implements Runnable {
+public class ConsumerService  {
 
     private final TicketPool ticketPool;
-    private final User user;
+   // private final User user;
     private final TicketSaleRepository ticketSaleRepository;
     public SystemConfig config;
     private boolean systemRunning;
-    //For front end
-    BlockingQueue<String> updatesQueue = new LinkedBlockingQueue<>();
 
     // Constructor
     @Autowired
@@ -33,16 +31,15 @@ public class ConsumerService implements Runnable {
         this.config=config;
         this.ticketSaleRepository=ticketSaleRepository;
         this.systemRunning = true; // Start with the producer running
-
-
-   //Initialize Consumer details
+/*
+        //Initialize Consumer details
     this.user=new User();
     user.setUserID(UUID.randomUUID().toString().substring(0,5));
     user.setUserUsername("USER-name");
     user.setUserEmail("user@gmail.com");
-    user.setUserPassword(UUID.randomUUID().toString());
+    user.setUserPassword(UUID.randomUUID().toString());*/
 }
-
+/*
     @Override
     public void run() {
         try {
@@ -55,14 +52,16 @@ public class ConsumerService implements Runnable {
 
                 // Retrieve and process ticket
                 Ticket ticket = ticketPool.retrieveTicket();
-                updatesQueue.put("Ticket consumed: " + ticket);
                 ticketPool.incrementTicketsConsumed();
 
                 // Log the transaction in TicketingCLI
-                System.out.println("User " + user.getUserUsername() +
-                        " retrieved ticket: " + ticket.getTicketID() +
-                        ", Price: " + ticket.getTicketPrice() +
-                        ", Type: " + ticket.getTicketType());
+                System.out.println("--------------------------------------");
+                System.out.printf("User: %-20s%n", user.getUserUsername());
+                System.out.printf("Ticket ID: %-15s%n", ticket.getTicketID());
+                System.out.printf("Price: %-15.2f%n", ticket.getTicketPrice());
+                System.out.printf("Type: %-15s%n", ticket.getTicketType());
+                System.out.println("========================================");
+                System.out.println(" ");
 
                 // Simulate user retrieval rate
                 Thread.sleep(1000 / config.getUserRetrievalRate());
@@ -76,5 +75,5 @@ public class ConsumerService implements Runnable {
     public void stop() {
         systemRunning = false;
     }
-
+*/
 }
