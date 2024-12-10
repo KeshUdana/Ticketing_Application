@@ -1,122 +1,122 @@
 [
   {
-    "timestamp": "2024-12-10T14:21:16.024431500",
+    "timestamp": "2024-12-10T16:00:43.864760100",
     "threadType": "Producer ",
-    "threadId": 60,
+    "threadId": 58,
     "status": " Started"
   },
   {
-    "timestamp": "2024-12-10T14:21:16.027434100",
+    "timestamp": "2024-12-10T16:00:43.867769700",
     "threadType": "Producer ",
-    "threadId": 61,
+    "threadId": 59,
     "status": " Started"
   },
   {
-    "timestamp": "2024-12-10T14:21:16.044986200",
+    "timestamp": "2024-12-10T16:00:43.888690700",
     "threadType": "Consumer ",
-    "threadId": 62,
-    "status": " Processed Ticket ID: 631881e6-6f7a-4b52-b5ee-0d991b80c7da"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:16.045995",
-    "threadType": "Consumer ",
-    "threadId": 69,
-    "status": " Processed Ticket ID: 88af4d52-ed87-4ce7-a110-e6779957806d"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:16.566035200",
-    "threadType": "Consumer ",
-    "threadId": 68,
-    "status": " Processed Ticket ID: 195b8d18-0bf6-4f66-8961-24954e1d258b"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:16.568144900",
-    "threadType": "Consumer ",
-    "threadId": 63,
-    "status": " Processed Ticket ID: e6134a66-d7af-4180-a9fa-33a379abd115"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:17.172631500",
-    "threadType": "Consumer ",
-    "threadId": 64,
-    "status": " Processed Ticket ID: d550f2f9-0457-4aa6-8ecf-7fced226d734"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:17.174573400",
-    "threadType": "Consumer ",
-    "threadId": 65,
-    "status": " Processed Ticket ID: 966465ed-979c-4c9c-9cc1-0f8b4f7dfe5a"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:32.038235600",
-    "threadType": "Producer ",
     "threadId": 60,
-    "status": "Stopped"
+    "status": " Processed Ticket ID: bb00ad42-6a7b-4b37-97be-94ceee8eb6ae"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.041679300",
-    "threadType": "Producer ",
+    "timestamp": "2024-12-10T16:00:43.890690400",
+    "threadType": "Consumer ",
     "threadId": 61,
+    "status": " Processed Ticket ID: 941ecd11-6380-47e5-96ae-71b980d9b6d7"
+  },
+  {
+    "timestamp": "2024-12-10T16:00:44.409631900",
+    "threadType": "Consumer ",
+    "threadId": 62,
+    "status": " Processed Ticket ID: 3609d2b3-0931-4250-b9f1-24b5016d7823"
+  },
+  {
+    "timestamp": "2024-12-10T16:00:44.411629100",
+    "threadType": "Consumer ",
+    "threadId": 63,
+    "status": " Processed Ticket ID: eac40b6e-e79f-4530-88f0-979c1dc70b77"
+  },
+  {
+    "timestamp": "2024-12-10T16:00:44.922689100",
+    "threadType": "Consumer ",
+    "threadId": 64,
+    "status": " Processed Ticket ID: f282751a-125b-4a2e-a90e-92d7aa9388d5"
+  },
+  {
+    "timestamp": "2024-12-10T16:00:44.927684200",
+    "threadType": "Consumer ",
+    "threadId": 65,
+    "status": " Processed Ticket ID: ab46b572-cac4-4c33-a479-3d7f2dfd6a74"
+  },
+  {
+    "timestamp": "2024-12-10T16:04:10.481307800",
+    "threadType": "Producer ",
+    "threadId": 58,
     "status": "Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.042679400",
+    "timestamp": "2024-12-10T16:04:10.482312",
+    "threadType": "Producer ",
+    "threadId": 59,
+    "status": "Stopped"
+  },
+  {
+    "timestamp": "2024-12-10T16:04:10.483306200",
+    "threadType": "Consumer ",
+    "threadId": 60,
+    "status": " Stopped"
+  },
+  {
+    "timestamp": "2024-12-10T16:04:10.484308",
+    "threadType": "Consumer ",
+    "threadId": 61,
+    "status": " Stopped"
+  },
+  {
+    "timestamp": "2024-12-10T16:04:10.485310300",
     "threadType": "Consumer ",
     "threadId": 62,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.043677900",
+    "timestamp": "2024-12-10T16:04:10.485310300",
     "threadType": "Consumer ",
     "threadId": 63,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.044692900",
+    "timestamp": "2024-12-10T16:04:10.486400900",
     "threadType": "Consumer ",
     "threadId": 64,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.045676800",
+    "timestamp": "2024-12-10T16:04:10.487308800",
     "threadType": "Consumer ",
     "threadId": 65,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.045676800",
+    "timestamp": "2024-12-10T16:04:10.488310800",
     "threadType": "Consumer ",
     "threadId": 66,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.046680300",
+    "timestamp": "2024-12-10T16:04:10.488310800",
     "threadType": "Consumer ",
     "threadId": 67,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.047678800",
+    "timestamp": "2024-12-10T16:04:10.489309600",
     "threadType": "Consumer ",
     "threadId": 68,
     "status": " Stopped"
   },
   {
-    "timestamp": "2024-12-10T14:21:32.047678800",
+    "timestamp": "2024-12-10T16:04:10.489309600",
     "threadType": "Consumer ",
     "threadId": 69,
-    "status": " Stopped"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:32.048939900",
-    "threadType": "Consumer ",
-    "threadId": 70,
-    "status": " Stopped"
-  },
-  {
-    "timestamp": "2024-12-10T14:21:32.048939900",
-    "threadType": "Consumer ",
-    "threadId": 71,
     "status": " Stopped"
   }
 ]

@@ -1,16 +1,12 @@
 package Startup;
 
-
 import managment.backend.model.*;
 import managment.backend.persistence.TicketSales;
 import managment.backend.repository.TicketSaleRepository;
-import managment.backend.service.ConsumerService;
-import managment.backend.service.ProducerService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Component;
-
 
 import java.io.File;
 import java.io.FileWriter;
@@ -187,7 +183,7 @@ public class TicketingCLI {
                         ticketPool.addTicket(ticket);
                         ticketPool.incrementTicketsProduced();
 
-                        logTicketDetails(vendor, ticket);
+                        logTicketDetails(vendor, ticket,user);
                         Thread.sleep(1000 / config.getVendorReleaseRate());
                     }
                 } catch (InterruptedException e) {
@@ -206,12 +202,12 @@ public class TicketingCLI {
         for (int j = 0; j < numConsumers; j++) {
             Thread consumerThread = new Thread(() -> {
                 try {
-                    latch.await(); // Wait until `TicketPool` is ready
+                    latch.await();
                     while (true) {
                         Ticket ticket = ticketPool.retrieveTicket();
                         ticketPool.incrementTicketsConsumed();
                         if (ticket == null) {
-                            break; // Exit if no tickets are left
+                            break;
                         }
                         logThreadEvent("Consumer ", Thread.currentThread().getId(), " Processed Ticket ID: " + ticket.getTicketID());
                     }
@@ -226,7 +222,7 @@ public class TicketingCLI {
             consumerThreads.add(consumerThread);
             consumerThread.start();
             consumerCount++;
-           // System.out.println("Consumer " + consumerThread.getId() + " Started");
+
         }
 
         latch.countDown();
@@ -327,13 +323,17 @@ public class TicketingCLI {
         return ticket;
     }
 
-    private void logTicketDetails(Vendor vendor, Ticket ticket) {
-        System.out.println("========== Ticket Added ==========");
-        System.out.printf("Vendor ID: %-15s%n", vendor.getVendorID());
-        System.out.printf("Ticket ID: %-15s%n", ticket.getTicketID());
-        System.out.printf("Price: %-15.2f%n", ticket.getTicketPrice());
-        System.out.printf("Type: %-15s%n", ticket.getTicketType());
+    private synchronized void logTicketDetails(Vendor vendor, Ticket ticket, User user) {
+        System.out.println("========== Ticket Transaction ==========");
+        System.out.println("Vendor ID: " + vendor.getVendorID());
+        System.out.println("Ticket ID: " + ticket.getTicketID());
+        System.out.println("Price: " + ticket.getTicketPrice());
+        System.out.println("Type: " + ticket.getTicketType());
+        System.out.println("User ID: " + user.getUserID());
+        System.out.println("Timestamp: " + ticket.getTimeStamp());
+        System.out.println("=======================================");
     }
+
     private TicketSales generateTicketSale(Ticket ticket, Vendor vendor, User user){
         TicketSales sale=new TicketSales();
         sale.setTicket(ticket);

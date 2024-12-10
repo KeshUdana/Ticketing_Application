@@ -11,7 +11,8 @@ import java.util.UUID;
 public class TicketSaleRepository {
     private Connection connection;
 
-    public TicketSaleRepository() {        try {
+    public TicketSaleRepository() {
+        try {
             this.connection = DatabaseConnection.getConnection();
         } catch (SQLException e) {
             System.out.println("Database connection error: " + e.getMessage());
@@ -21,7 +22,7 @@ public class TicketSaleRepository {
     public void save(TicketSales ticketSales) {
         String query = "INSERT INTO ticket_sales (ticket_id, ticket_type, ticket_price, transaction_time, vendor_id, user_id) VALUES (?, ?, ?, ?, ?, ?)";
         try {
-            // Set auto-commit to false
+
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
