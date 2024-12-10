@@ -24,7 +24,7 @@ public class TicketSales {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "vendor_id", referencedColumnName = "vendorID") // Fixed naming convention
+    @JoinColumn(name = "vendor_id", referencedColumnName = "vendorID")
     private Vendor vendor;
 
     @Column(name = "transaction_time")
