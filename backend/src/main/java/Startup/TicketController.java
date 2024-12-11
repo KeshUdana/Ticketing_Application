@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -18,9 +19,9 @@ public class TicketController {
 
     @GetMapping("/counts")
     public Map<String, Integer> getThreadCounts() {
-        return Map.of(
-                "producerCount", ticketService.getProducerCount(),
-                "consumerCount", ticketService.getConsumerCount()
-        );
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("ProducerCount",ticketService.getProducerCount());
+        counts.put("ConsumerCount", ticketService.getConsumerCount());
+        return counts;
     }
 }
