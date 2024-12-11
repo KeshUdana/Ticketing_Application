@@ -1,44 +1,44 @@
 [
   {
-    "timestamp": "2024-12-11T15:40:39.627816900",
+    "timestamp": "2024-12-11T16:05:53.884261900",
     "threadType": "Producer ",
+    "threadId": 58,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-11T16:05:53.888260700",
+    "threadType": "Producer ",
+    "threadId": 59,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-11T16:05:53.908782400",
+    "threadType": "Consumer ",
     "threadId": 60,
-    "status": " Started"
+    "status": " Processed Ticket ID: 27830350-6d11-45f7-8782-32f083136b68"
   },
   {
-    "timestamp": "2024-12-11T15:40:39.630822700",
-    "threadType": "Producer ",
-    "threadId": 61,
-    "status": " Started"
-  },
-  {
-    "timestamp": "2024-12-11T15:40:39.646928700",
+    "timestamp": "2024-12-11T16:05:53.910783400",
     "threadType": "Consumer ",
     "threadId": 62,
-    "status": " Processed Ticket ID: fcfa7b46-2c1b-4e3a-a220-bbccedb80b4e"
+    "status": " Processed Ticket ID: 771f822b-77b3-43bb-906f-b7463f67dd99"
   },
   {
-    "timestamp": "2024-12-11T15:40:39.647924900",
+    "timestamp": "2024-12-11T16:05:54.412157100",
     "threadType": "Consumer ",
-    "threadId": 65,
-    "status": " Processed Ticket ID: 10a1669f-a178-4d17-b2ce-a7e7eb4ec07d"
+    "threadId": 63,
+    "status": " Processed Ticket ID: 70baf5ae-82e6-443e-b9b2-ee6d94c2e023"
   },
   {
-    "timestamp": "2024-12-11T15:40:40.149678700",
+    "timestamp": "2024-12-11T16:05:54.506697",
+    "threadType": "Consumer ",
+    "threadId": 61,
+    "status": " Processed Ticket ID: 8aab757e-4497-41b2-93ab-cb791a6b7877"
+  },
+  {
+    "timestamp": "2024-12-11T16:05:54.960955300",
     "threadType": "Consumer ",
     "threadId": 64,
-    "status": " Processed Ticket ID: 6b96ffdc-68d9-4119-952b-740014c5b0c5"
-  },
-  {
-    "timestamp": "2024-12-11T15:40:40.152769400",
-    "threadType": "Consumer ",
-    "threadId": 71,
-    "status": " Processed Ticket ID: d3ec2b22-98a4-4522-9391-457b9dc85701"
-  },
-  {
-    "timestamp": "2024-12-11T15:40:40.652243700",
-    "threadType": "Consumer ",
-    "threadId": 66,
-    "status": " Processed Ticket ID: 8a92a107-2b96-4920-bb2d-3a15208a8ea7"
+    "status": " Processed Ticket ID: cb345584-8010-4e5f-ac10-08381dd2d182"
   }
 ]

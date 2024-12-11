@@ -14,7 +14,6 @@ import {
     ChartDataset,
 } from "chart.js";
 
-// Register necessary Chart.js components
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Tooltip);
 
 type ThreadData = {
@@ -25,13 +24,12 @@ type ThreadData = {
 const Dashboard: () => JSX.Element = () => {
     const [threadData, setThreadData] = useState<ThreadData[]>([]);
 
-    const fetchCounts = async (): Promise<{ consumerCount: number ;producerCount: number; }> => {
+    const fetchCounts = async (): Promise<{ producerCount: number; consumerCount: number }> => {
         try {
             const response = await fetch("http://localhost:8080/events/counts");
-            if (!response.ok) {
-                throw new Error("Failed to fetch counts");
-            }
-            return await response.json();
+            if (!response.ok) throw new Error("Failed to fetch counts");
+            const data = await response.json();
+            return { producerCount: data.ProducerCount, consumerCount: data.ConsumerCount };
         } catch (error) {
             console.error("Error fetching counts:", error);
             throw error;
@@ -54,13 +52,18 @@ const Dashboard: () => JSX.Element = () => {
 
         const interval = setInterval(fetchData, 1000);
         fetchData();
-
         return () => clearInterval(interval);
     }, []);
 
-    const labels = threadData.map((_, index) => `Data Point ${index + 1}`);
-    const activeThreadsData = threadData.map((data) => data.activeThreads);
-    const completedThreadsData = threadData.map((data) => data.completedThreads);
+    const labels = threadData.length > 0
+        ? threadData.map((_, index) => `Data Point ${index + 1}`)
+        : ["No Data"];
+    const activeThreadsData = threadData.length > 0
+        ? threadData.map((data) => data.activeThreads)
+        : [0];
+    const completedThreadsData = threadData.length > 0
+        ? threadData.map((data) => data.completedThreads)
+        : [0];
 
     const data: ChartData<"line"> = {
         labels,
