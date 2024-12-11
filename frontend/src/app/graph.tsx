@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, JSX } from "react";
-import { ThreadCounts } from "@/app/apiTypes";
 import {
     LineChart,
     Line,
@@ -21,7 +20,7 @@ type ThreadData = {
 const Dashboard: () => JSX.Element = () => {
     const [threadData, setThreadData] = useState<ThreadData[]>([]);
 
-    // (Dis a fallback function)
+
     const fetchCounts = async (): Promise<{ producerCount: number; consumerCount: number }> => {
         try {
             const response = await fetch("http://localhost:8080/events/counts");
@@ -36,20 +35,6 @@ const Dashboard: () => JSX.Element = () => {
     };
 
     useEffect(() => {
-
-        const eventSource = new EventSource("http://localhost:8080/events/counts");
-
-        eventSource.onmessage = (event) => {
-            const data: ThreadCounts = JSON.parse(event.data);
-            const newEntry: ThreadData = {
-                timestamp: new Date().toLocaleTimeString(),
-                activeThreads: data.producerCount,
-                completedThreads: data.consumerCount,
-            };
-            setThreadData((prev) => [...prev.slice(-9), newEntry]);
-        };
-
-
         const fetchData = async () => {
             try {
                 const { producerCount, consumerCount } = await fetchCounts();
@@ -64,13 +49,11 @@ const Dashboard: () => JSX.Element = () => {
             }
         };
 
-        const interval = setInterval(fetchData, 5000);
 
+        const interval = setInterval(fetchData, 1000);
+        fetchData();
 
-        return () => {
-            eventSource.close();
-            clearInterval(interval);
-        };
+        return () => clearInterval(interval);
     }, []);
 
     return (
