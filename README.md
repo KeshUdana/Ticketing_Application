@@ -1,7 +1,7 @@
 # Ticketing Simulation System
 
 ## Overview
-This project implements a **real-time ticketing simulation system** following the **Producer-Consumer pattern**. The system demonstrates ticket release by vendors (producers) and ticket purchases by customers (consumers). The application is built using **Spring Boot** (backend), **Next.js 13** (frontend with React 17), and **PostgreSQL** (database).
+A professional ticketing simulation system designed with modern technologies and a focus on efficient multithreading using the Producer-Consumer pattern. This project demonstrates robust backend management and a dynamic, real-time frontend interface for tracking ticket sales. Object-Oriented Programming (OOP) principles, especially multithreading, are central to its architecture, ensuring thread behavior is robustly tested and optimized.
 
 ## Features
 - Real-time simulation of ticket release and purchase.
@@ -23,6 +23,10 @@ This project implements a **real-time ticketing simulation system** following th
 The project is organized into two main folders:
 
 1. **Backend**:
+   The backend follows the Model-View-Controller (MVC) architecture and is further divided into 
+   packages for better modularity:
+
+management.backend Package
    - **`Startup` Package**:
      - `SystemConfig`: Configures the simulation parameters.
      - `TicketController`: API endpoint for thread count monitoring.
@@ -37,9 +41,19 @@ The project is organized into two main folders:
      - `repository`:
        - `TicketRepository`: Interface for database operations.
 
-2. **Frontend**:
+3. **Frontend**:
    - Built with Next.js 13 and styled using Tailwind CSS.
-   - Chart.js is used to display line graphs showing real-time producer and consumer thread behavior.
+   - Chart.js is used to display line graphs showing real-time producer and consumer thread 
+     behavior.
+   -Interfaces with the backend via API endpoints.
+
+*Key Features*
+
+Line graphs dynamically show thread counts and behaviors.
+
+Seamlessly connects with the backend running on port 8080.
+
+Configured to run exclusively on port 3000. If prompted to use another port, restart the server until port 3000 is available.
 
 ---
 
