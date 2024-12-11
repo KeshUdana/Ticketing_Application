@@ -24,11 +24,11 @@ import java.io.IOException;
 public class BackendApplication {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		// Check if the config.json file exists
+
 		File configFile = new File("config.json");
 
 		if (!configFile.exists()) {
-			// Start Spring Boot application
+
 			SpringApplication.run(BackendApplication.class, args);
 			TicketingCLI.main(args);
 		} else {

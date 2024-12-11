@@ -44,7 +44,7 @@ const Dashboard: () => JSX.Element = () => {
                     activeThreads: producerCount,
                     completedThreads: consumerCount,
                 };
-                setThreadData((prev) => [...prev.slice(-9), newEntry]); // Keep the last 10 data points
+                setThreadData((prev) => [...prev.slice(-19), newEntry]); // Keep the last 10 data points
             } catch (error) {
                 console.error("Error fetching thread data:", error);
             }

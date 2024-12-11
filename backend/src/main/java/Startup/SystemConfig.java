@@ -24,10 +24,10 @@ public class SystemConfig {
     private static final String CONFIG_FILE = "config.json";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Default constructor
+
     public SystemConfig() {}
 
-    // Getters and Setters
+
     public int getTotalTickets() {
         return totalTickets;
     }
@@ -63,11 +63,6 @@ public class SystemConfig {
             System.out.println("Vendor release rate cannot be less than 0.");
         }
     }
-
-    public int getUserRetrievalRate() {
-        return userRetrievalRate;
-    }
-
     public void setUserRetrievalRate(int userRetrievalRate) {
         if (userRetrievalRate > 0) {
             this.userRetrievalRate = userRetrievalRate;
