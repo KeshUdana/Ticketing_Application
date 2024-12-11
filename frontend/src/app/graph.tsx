@@ -25,7 +25,7 @@ type ThreadData = {
 const Dashboard: () => JSX.Element = () => {
     const [threadData, setThreadData] = useState<ThreadData[]>([]);
 
-    const fetchCounts = async (): Promise<{ producerCount: number; consumerCount: number }> => {
+    const fetchCounts = async (): Promise<{ consumerCount: number ;producerCount: number; }> => {
         try {
             const response = await fetch("http://localhost:8080/events/counts");
             if (!response.ok) {
@@ -66,7 +66,7 @@ const Dashboard: () => JSX.Element = () => {
         labels,
         datasets: [
             {
-                label: "Active Threads",
+                label: "Producer Threads",
                 data: activeThreadsData,
                 borderColor: "rgb(75, 192, 192)",
                 backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -74,7 +74,7 @@ const Dashboard: () => JSX.Element = () => {
                 tension: 0.4,
             } as ChartDataset<"line">,
             {
-                label: "Completed Threads",
+                label: "Consumer Threads",
                 data: completedThreadsData,
                 borderColor: "rgb(192, 75, 192)",
                 backgroundColor: "rgba(192, 75, 192, 0.2)",
@@ -88,8 +88,8 @@ const Dashboard: () => JSX.Element = () => {
         <div style={{ padding: "20px" }}>
             <h1>Thread Analytics Dashboard</h1>
             <div style={{ height: "400px", width: "100%" }}>
-            <Line data={data} options={{ responsive: true, maintainAspectRatio: false }} />
-        </div>
+                <Line data={data} options={{ responsive: true, maintainAspectRatio: false }} />
+            </div>
         </div>
     );
 };

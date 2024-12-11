@@ -1,34 +1,25 @@
 package managment.backend.model;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Ticket")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String ticketID; // Changed to private (encapsulation best practice)
+    private String ticketID;
 
     @Column(name = "Price")
-    private double ticketPrice; // Changed to private
+    private double ticketPrice;
 
     @Column(name = "Type")
-    private String ticketType; // Changed to private
+    private String ticketType;
 
     @Column(name = "Timestamp")
-    private String timeStamp; // Changed to private
+    private String timeStamp;
 
-    // Default constructor (required by JPA)
+
     public Ticket() {}
 
-    // Parameterized constructor
-    /*
-    public Ticket(String ticketID,double ticketPrice,String ticketType,String timeStamp) {
-        this.ticketID=ticketID;
-        this.ticketPrice = ticketPrice;
-        this.ticketType =ticketType;
-        this.timeStamp = timeStamp; // Automatically sets the current time
-    }*/
 
 
 
@@ -40,15 +31,12 @@ public class Ticket {
     public double getTicketPrice() {
         return ticketPrice;
     }
-
     public String getTicketType() {
         return ticketType;
     }
     public String getTimeStamp() {
         return timeStamp;
     }
-
-    //Setters
     public void setTicketID(String ticketID){
         this.ticketID=ticketID;
     }
@@ -62,8 +50,6 @@ public class Ticket {
         this.timeStamp=timeStamp;
     }
 
-
-    // Overriding toString for easy logging
     @Override
     public String toString() {
         return "Ticket{" +

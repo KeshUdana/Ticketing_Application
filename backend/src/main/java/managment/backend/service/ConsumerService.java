@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ConsumerService  {
 
     private final TicketPool ticketPool;
-   // private final User user;
+    // private final User user;
     private final TicketSaleRepository ticketSaleRepository;
     public SystemConfig config;
     private boolean systemRunning;
@@ -38,7 +38,7 @@ public class ConsumerService  {
     user.setUserUsername("USER-name");
     user.setUserEmail("user@gmail.com");
     user.setUserPassword(UUID.randomUUID().toString());*/
-}
+    }
 /*
     @Override
     public void run() {

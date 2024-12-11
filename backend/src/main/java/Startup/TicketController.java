@@ -20,8 +20,8 @@ public class TicketController {
     @GetMapping("/counts")
     public Map<String, Integer> getThreadCounts() {
         Map<String, Integer> counts = new HashMap<>();
-        counts.put("ProducerCount",ticketService.getProducerCount());
         counts.put("ConsumerCount", ticketService.getConsumerCount());
+        counts.put("ProducerCount",ticketService.getProducerCount());
         return counts;
     }
 }

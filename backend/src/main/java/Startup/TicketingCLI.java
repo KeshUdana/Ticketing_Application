@@ -25,8 +25,6 @@ public class TicketingCLI {
     private TicketPool ticketPool;
     private Vendor vendor;
 
-
-
     private List<Thread> producerThreads = new ArrayList<>();
     private List<Thread> consumerThreads = new ArrayList<>();
 
@@ -113,7 +111,6 @@ public class TicketingCLI {
         try {
             this.ticketPool = TicketPool.getInstance();
             ticketPool.initialize(config);
-            // Initialize Ticketing Repository and Pool
             System.out.println("TicketPool initialized ");
         } catch (IllegalStateException | IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -167,7 +164,6 @@ public class TicketingCLI {
         TicketSaleRepository ticketSaleRepository = new TicketSaleRepository();
         CountDownLatch latch = new CountDownLatch(1);
 
-        // Start producer threads
         for (int i = 0; i < numProducerThreads; i++) {
             Vendor vendor = createVendor();
             Thread producerThread = new Thread(() -> {

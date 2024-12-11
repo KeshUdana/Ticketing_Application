@@ -1,0 +1,39 @@
+digraph "app" {
+
+splines  = ortho;
+fontname = "Inconsolata";
+
+node [colorscheme = ylgnbu4];
+edge [colorscheme = dark28, dir = both];
+
+"@types/.../index.d.ts"                [shape = record, label = "{ @types/.../index.d.ts |  JSX : \l  useEffect : \l }"];
+"app/globals.css"                      [shape = record, label = "{ app/globals.css |  }"];
+"app/graph.tsx"                        [shape = record, label = "{ app/graph.tsx |  CategoryScale : \l  ChartData : \l  ChartDataset : \l  ChartJS : \l  JSX : \l  Legend : \l  Line : \l  LineElement : \l  LinearScale : \l  PointElement : \l  Tooltip : \l  useEffect : \l  useState : \l }"];
+"app/layout.tsx"                       [shape = record, label = "{ app/layout.tsx |  Metadata : \l  globals.css : \l  localFont : \l }"];
+"app/page.tsx"                         [shape = record, label = "{ app/page.tsx |  Dashboard : \l }"];
+"chart.js/.../index.d.ts"              [shape = record, label = "{ chart.js/.../index.d.ts |  ChartData : \l  ChartDataset : \l }"];
+"chart.js/.../types.d.ts"              [shape = record, label = "{ chart.js/.../types.d.ts |  CategoryScale : \l  Chart : \l  Legend : \l  LineElement : \l  LinearScale : \l  PointElement : \l  Tooltip : \l }"];
+"next/.../index.d.ts"                  [shape = record, label = "{ next/.../index.d.ts |  }"];
+"next/.../metadata-interface.d.ts"     [shape = record, label = "{ next/.../metadata-interface.d.ts |  Metadata : \l }"];
+react                                  [shape = record, label = "{ react |  useState : \l }"];
+"react-chartjs-2/.../typedCharts.d.ts" [shape = record, label = "{ react-chartjs-2/.../typedCharts.d.ts |  Line : \l }"];
+
+"app/graph.tsx"                        -> "@types/.../index.d.ts"                [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "@types/.../index.d.ts"                [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../index.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../index.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "chart.js/.../types.d.ts"              [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> react                                  [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/graph.tsx"                        -> "react-chartjs-2/.../typedCharts.d.ts" [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/layout.tsx"                       -> "app/globals.css"                      [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/layout.tsx"                       -> "next/.../index.d.ts"                  [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/layout.tsx"                       -> "next/.../metadata-interface.d.ts"     [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+"app/page.tsx"                         -> "app/graph.tsx"                        [color = "#595959", style = solid , arrowtail = tee     , arrowhead = none    , taillabel = "", label = "", headlabel = ""];
+
+}

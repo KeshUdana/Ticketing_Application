@@ -1,0 +1,44 @@
+[
+  {
+    "timestamp": "2024-12-11T15:40:39.627816900",
+    "threadType": "Producer ",
+    "threadId": 60,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:39.630822700",
+    "threadType": "Producer ",
+    "threadId": 61,
+    "status": " Started"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:39.646928700",
+    "threadType": "Consumer ",
+    "threadId": 62,
+    "status": " Processed Ticket ID: fcfa7b46-2c1b-4e3a-a220-bbccedb80b4e"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:39.647924900",
+    "threadType": "Consumer ",
+    "threadId": 65,
+    "status": " Processed Ticket ID: 10a1669f-a178-4d17-b2ce-a7e7eb4ec07d"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:40.149678700",
+    "threadType": "Consumer ",
+    "threadId": 64,
+    "status": " Processed Ticket ID: 6b96ffdc-68d9-4119-952b-740014c5b0c5"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:40.152769400",
+    "threadType": "Consumer ",
+    "threadId": 71,
+    "status": " Processed Ticket ID: d3ec2b22-98a4-4522-9391-457b9dc85701"
+  },
+  {
+    "timestamp": "2024-12-11T15:40:40.652243700",
+    "threadType": "Consumer ",
+    "threadId": 66,
+    "status": " Processed Ticket ID: 8a92a107-2b96-4920-bb2d-3a15208a8ea7"
+  }
+]
