@@ -12,7 +12,6 @@ import {
 } from "recharts";
 
 type ThreadData = {
-    timestamp: string;
     activeThreads: number;
     completedThreads: number;
 };
@@ -39,7 +38,7 @@ const Dashboard: () => JSX.Element = () => {
             try {
                 const { producerCount, consumerCount } = await fetchCounts();
                 const newEntry: ThreadData = {
-                    timestamp: new Date().toLocaleTimeString(),
+                 //   timestamp: new Date().toLocaleTimeString(),
                     activeThreads: producerCount,
                     completedThreads: consumerCount,
                 };
