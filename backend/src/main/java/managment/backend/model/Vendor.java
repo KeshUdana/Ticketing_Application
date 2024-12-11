@@ -17,22 +17,12 @@ public class Vendor{
     private String vendorPassword;
 
     //Constructor
-    public Vendor(String vendorID){//,String vendorUsername,String vendorEmail,String vendorPassword){
-        this.vendorID= vendorID;
-        this.vendorUsername=vendorUsername;
-        this.vendorEmail=vendorEmail;
-        this.vendorPassword=vendorPassword;
-    }
+    public Vendor(String vendorID){
+        this.vendorID= vendorID;}
 
-    public Vendor() {}//For JPA
+    public Vendor() {}
 
-    //Getters
     public String getVendorID(){return vendorID;}
-    public String getVendorUsername(){return vendorUsername;}
-    public String getVendorEmail(){return vendorEmail;}
-    public String getVendorPassword(){return vendorPassword;}
-
-    //Setters
 
     public void setVendorID(String vendorID){
         this.vendorID=vendorID;

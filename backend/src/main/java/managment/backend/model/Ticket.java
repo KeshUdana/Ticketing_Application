@@ -19,11 +19,6 @@ public class Ticket {
 
 
     public Ticket() {}
-
-
-
-
-    // Getters
     public String getTicketID() {
         return ticketID;
     }
